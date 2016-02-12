@@ -1,6 +1,6 @@
 
 public class DownloaderTask implements Runnable {
-
+	
 	String m_UrlToDownload;
 	HTTPQuery m_QuerySite;
 	AnalyzerThreadPool m_AnalyzerThreadPool;
@@ -40,7 +40,8 @@ public class DownloaderTask implements Runnable {
 					m_PageSizeAndType = m_QuerySite.parseContentLengthFromHttpResponse(m_DownloadedHtmlWithBody[0]);
 
 					//TODO: analyzing Task
-					//m_AnalyzerTask = new AnalyzerTask(body, m_AnalyzerThreadPool, m_UrlToDownload, m_PageSizeAndType);
+					m_AnalyzerTask = new AnalyzerTask(body, DownloaderThreadPool i_threadPool, m_UrlToDownload);
+					
 					
 					//add letch by one
 					WorkerLatch.getInstance().up();

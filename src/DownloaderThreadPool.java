@@ -1,6 +1,6 @@
 
 public class DownloaderThreadPool {
-	 
+	
 	SynchronizedQueueLL m_DownloaderQueue;
 	
 	// create collection of workers

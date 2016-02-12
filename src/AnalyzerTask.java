@@ -24,16 +24,16 @@ public class AnalyzerTask implements Runnable {
 	String m_htmlSourceCode;
 	URI m_uri;
 	String m_pageAddress;
-	String m_sizeAndTypeOfPage;
+	int m_sizeAndTypeOfPage;
 
 	//LinkReport m_report;
 
 	public AnalyzerTask(String i_htmlSourceCode, DownloaderThreadPool i_threadPool, 
-			String i_pageAddress, String i_lengthAndType) throws URISyntaxException {
+			String i_pageAddress) throws URISyntaxException {
 		m_DownloaderThreadPool = i_threadPool;
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_pageAddress = i_pageAddress;
-		m_sizeAndTypeOfPage = i_lengthAndType;
+		m_sizeAndTypeOfPage = 0;
 		query = new HTTPQuery();
 
 		if(m_pageAddress.toLowerCase().indexOf("http://") != 0 && m_pageAddress.toLowerCase().indexOf("https://") != 0){
@@ -64,9 +64,12 @@ public class AnalyzerTask implements Runnable {
 
 		// send all internal link to downloader queue
 		LinkedList<String> internalLinksToDownload = getInternalAnchors();
+		
 		for(int i = 0; i < internalLinksToDownload.size(); i++){
+			// add the letch
+			WorkerLatch.getInstance().up();
 			System.out.println(String.format("Sending to downloader: %S", internalLinksToDownload.get(i)));
-			Downloader downloader = new Downloader(m_DownloaderThreadPool, internalLinksToDownload.get(i));
+			DownloaderTask downloader = new DownloaderTask(, internalLinksToDownload.get(i));
 			m_DownloaderThreadPool.putTaskInDownloaderQueue((Runnable) downloader);
 		}
 
@@ -243,7 +246,7 @@ public class AnalyzerTask implements Runnable {
 	}
 
 	// 
-	private void fetchResourcesFounedAndAddToReport() {
+	private void fetchResourcesFounedAndAddToReport() throws IOException, Exception {
 
 		fetchAllFromList(m_images, 0);
 		fetchAllFromList(m_videos, 1);
@@ -253,58 +256,46 @@ public class AnalyzerTask implements Runnable {
 
 	}
 
-	//TODO: del
-	private void fetchFromInternalLinks(){
-		for(int i = 0; i < m_internalAnchors.size(); i++){
-			String address = m_internalAnchors.get(i);
-			//Link link = new Link(address, "" , "", "0");
-			//m_report.addInternalPageLink(link);
-		}
-	}
+//	//TODO: del
+//	private void fetchFromInternalLinks(){
+//		for(int i = 0; i < m_internalAnchors.size(); i++){
+//			String address = m_internalAnchors.get(i);
+//			//Link link = new Link(address, "" , "", "0");
+//			//m_report.addInternalPageLink(link);
+//		}
+//	}
 
 	/**
 	 * @TODO pages in links, are going to be downloaded anyway and will have own reports
 	 * @param list to pop link from
 	 * @param listIdentifier - 0 image , 1 videos , 2 documents, 3 external pages
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	private void fetchAllFromList(LinkedList<String> list, int listIdentifier) {
-
+	private void fetchAllFromList(LinkedList<String> list, int listIdentifier) throws IOException, Exception {
 		for(int i = 0; i < list.size(); i++){
 			String address = list.get(i);
-			
-			//String extension = getExtensionFromString(address);
-
-			if(listIdentifier == 0){
-				// try insert to db ? 
-				// send req
-				// fill report
-				tryInsertToDB(address, listIdentifier);
-			}
-			else if(listIdentifier == 1){
-				m_report.addVideoLink(link);
-			}
-			else if(i == 2){
-				m_report.addDocumentLink(link);
-			}
-			else if(i == 3){
-				m_report.addExternalPageLink(link);
-			}
-
-
+			tryInsertToDB(address, listIdentifier);
 		} 
-		//System.out.println("failed on fetching image -> link = " + address);
-
-
-
-		//System.out.println("fetching an image failed on getting address or extension on index = " + i);
-
 	}
 
-	private void tryInsertToDB(String url, int identifier) throws Exception, IOException {
+	private void tryInsertToDB(String url, int identifier) {
 		
 		if (!CrawlerDB.getInstance().linkExist(url)) {
 			CrawlerDB.getInstance().addDownloadLink(url);
-			String response = query.sendHttpHeadRequest(url);
+			String response = "";
+			
+			// TODO: check what's happens when response with exception
+			try {
+				response = query.sendHttpHeadRequest(url);
+			} catch (UnknownHostException e) {
+				System.out.println("failed send heads request -> link " + url);
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("failed send heads request -> link " + url);
+			}
+			
 			String len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
 			
 			// image
@@ -326,37 +317,8 @@ public class AnalyzerTask implements Runnable {
 			else if (identifier == 3) {
 				CrawlerControler.getInstance().addNumOfExternalLinks();
 			}
-			
 		}
-		
 	}
-
-
-
-/*
-	private Link createLink(String linkAddress, String extension){
-		Link link = null;
-		try {
-			if(m_DownloaderThreadPool.containsUrlInAnalyzedNonInternalLinksList(linkAddress)){
-				String typeAndLength[] = query.sendHttpHeadRequestAndGetTypeAndLengthFromResponse(linkAddress).split("#_#@#_#");
-
-				m_DownloaderThreadPool.addToAnalyzedNonInternalLinks(linkAddress);
-
-				String type = typeAndLength[0];
-				String length = typeAndLength[1];
-				link = new Link(linkAddress, extension, type, length);
-			} else {
-				System.out.println("skipped a link since it already appeared in urls list : " + linkAddress);
-			}
-		} catch (IOException e) {
-			System.out.println("EXCEPTION ON AnalyzerTask->CreateLink() with linkAddress = " + linkAddress);
-			e.printStackTrace();
-		}
-
-		return link;
-	}
- */
-
 
 /*
 	private LinkReport createReport(){
