@@ -123,9 +123,10 @@ public class ReportPerDomain {
 	}
 	public String getFileNamesOfConnectedDomains(){
 		String tableCol = "";
-		for (String reportName : m_ConnectedDomains) {
-			tableCol += str 
+		for (String reportFileNameName : m_ConnectedDomains) {
+			tableCol += "<a href ='/" + reportFileNameName + "'>FILE HARTA BARTA</a></br>"; 
 		}
+		return tableCol;
 	}
 
 
