@@ -11,7 +11,6 @@ public class HTTPQuery {
 	
 	final String _CRLF = "\r\n";
 	
-	
 	private String readChunksFromBufferedReader(BufferedReader reader){
 		String chunkSizeAsString;
 		String messageBody = "";
@@ -35,9 +34,6 @@ public class HTTPQuery {
 		}
 		return null;
 	}
-	
-	
-	
 	
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
@@ -148,13 +144,6 @@ public class HTTPQuery {
 		
 		return new String[]{m_FullRequest, m_messageBodyString};
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	public String parseContentLengthFromHttpResponse(String response){
