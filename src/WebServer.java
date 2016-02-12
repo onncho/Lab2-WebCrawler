@@ -26,7 +26,7 @@ public class WebServer {
 		//webSrv.start();
 		
 		CrawlerControler.getInstance();
-		DownloaderTask task = new DownloaderTask("http://www.naon-serv.co.il");
+		DownloaderTask task = new DownloaderTask("http://www.atidim.co.il");
 		CrawlerControler.getInstance().addTaskToDownloaderQueue(task);
 		
 	}
