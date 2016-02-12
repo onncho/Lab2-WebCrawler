@@ -162,15 +162,24 @@ public class AnalyzerTask implements Runnable {
 		return i;
 	}
 
+	
+	
+	
 	// TODO: rejecting any line formatted without "http"/s "/" 
+	// http://
 	private String reformatAnchorLink(String link){
+		String repsDELETE = "---> LINE 167 :: reformatAnchorLink ( " + link + " ) \n";
 		String linkLowered = link.toLowerCase();
 		String verifiedLink;
 
-		if (link.charAt(link.length() - 1) == '#' || link.charAt(link.length() - 1) == '/') {			
+		repsDELETE += "---> LINE 171 :: pre 1st IF --> link = " + link + " \n";
+		if (link.charAt(link.length() - 1) == '#' || (link.charAt(link.length() - 1) == '/' && link.length() > 1)) {
+			System.out.println(repsDELETE);
+			System.out.println("---> LINE 173 :: inside 1st IF --> returns NULL on link = " + link + "<--");
 			return null; 
 		}
-
+		repsDELETE += "---> LINE 177 :: post 1st IF no change to link --> enters 2nd IF on line 179";
+		//System.out.println(repsDELETE);
 		// check if the link is internal
 		if(linkLowered.indexOf("/") == 0) {
 			verifiedLink = "http://" + m_uri.getPath() + link.toLowerCase();
@@ -181,7 +190,10 @@ public class AnalyzerTask implements Runnable {
 			} else {
 				verifiedLink = linkLowered;
 			}
+			
 		}
+		repsDELETE += "---> LINE 191 :: ABOUT TO EXIT reformatAnchorLink ( " + link + " )  output --> " + verifiedLink + "\n------\n------";
+		System.out.println(repsDELETE);
 		return verifiedLink;
 	}
 
@@ -197,9 +209,14 @@ public class AnalyzerTask implements Runnable {
 		boolean inserted = false;
 		if (formattedLink != null) {
 			try {
+				System.out.println("yoyo " + formattedLink);
+				if(formattedLink.indexOf("http:///") == 0){
+					formattedLink = formattedLink.substring(0, 7);
+					System.out.println("yoyo22 " + formattedLink);
+				}
 				linkURI = new URI(formattedLink);
 				if(linkURI.getHost().equals(m_uri.getHost())){
-					m_internalAnchors.push(formattedLink);
+					//m_internalAnchors.push(formattedLink);
 					inserted = pushIfNotExists(m_internalAnchors, formattedLink);
 				} else {
 					inserted = pushIfNotExists(m_externalAnchors, formattedLink);
