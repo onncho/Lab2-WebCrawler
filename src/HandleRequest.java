@@ -171,12 +171,20 @@ public class HandleRequest implements Runnable {
 		String domainToCrawl = copyOfParams.get("domainToCrawl");
 		boolean checkForPorts = checkForPortsParamExists ? copyOfParams.get("PortScanChecked").equals("Checked") : false;
 		boolean respectRobotsTxt = respectRobotsTxtExists ? copyOfParams.get("RobotsChecked").equals("Checked") : false;
+		if (checkForPorts) {
+			doPortScan();
+		}
 		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt);
 
 	}
 	
+	private void doPortScan() {
+		CrawlerControler.getInstance().startPortScanner();
+	}
+
 	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt) {
 		// TODO init crawler
+		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
 		return null;
 	}
 

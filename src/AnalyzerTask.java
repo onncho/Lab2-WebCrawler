@@ -64,6 +64,7 @@ public class AnalyzerTask implements Runnable {
 
 			// add to Report
 			addToDomainReport();
+			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
 			for(int i = 0; i < m_internalAnchors.size(); i++){
 				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
 
