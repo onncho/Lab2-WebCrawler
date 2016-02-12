@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -17,10 +15,16 @@ public class WebServer {
 			throw new IOException("Problem in Reading The Config File");
 		}
 
-		ThreadPool threadPool = new ThreadPool(ConfigurationObject.getMaxThreads());
-		ServerListener webserver = new ServerListener(threadPool);
+		//ThreadPool threadPool = new ThreadPool(ConfigurationObject.getMaxThreads());
+		//ServerListener webserver = new ServerListener(threadPool);
 
-		webserver.start();
+		//webserver.start();
+		
+		DownloaderThreadPool threadP = new DownloaderThreadPool(10);
+		ServerListener webSrv = new ServerListener(threadP);
+		
+		webSrv.start();
+		
 	}
 
 }
