@@ -38,7 +38,7 @@ public class DownloaderTask implements Runnable {
 
 						String body = m_DownloadedHtmlWithBody[1];
 
-						m_PageSizeAndType = m_QuerySite.parseContentLengthFromHttpResponse(m_DownloadedHtmlWithBody[0]);
+						m_PageSizeAndType = m_QuerySite.getContentLengthFromResponse(m_DownloadedHtmlWithBody[0]);
 
 						//TODO: analyzing Task
 						m_AnalyzerTask = new AnalyzerTask(body, m_UrlToDownload);

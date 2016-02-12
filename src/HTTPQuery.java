@@ -9,16 +9,16 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 public class HTTPQuery {
-	
+
 	final String _CRLF = "\r\n";
-	
+
 	private String readChunksFromBufferedReader(BufferedReader reader){
 		String chunkSizeAsString;
 		String messageBody = "";
 		try {
 			chunkSizeAsString = reader.readLine();
 			int currentChunk = Integer.parseInt(chunkSizeAsString, 16);
-			
+
 			while(currentChunk != 0){
 				long index = 0;
 				while(index < currentChunk){
@@ -30,12 +30,12 @@ public class HTTPQuery {
 			}
 			return messageBody;
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
@@ -45,60 +45,60 @@ public class HTTPQuery {
 				target = "http://" + target;
 			}
 			URL uri = new URL(target);
-			
+
 			String host = uri.getHost();
 			String path = uri.getPath();
 			path = path.equals("") ? "/" : path;
-			
+
 			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
 			String headers = "Host: " + host;
-			
-			
+
+
 			String currentRecievedLine = "";
-			
+
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
 			socket.setSoTimeout(7000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			
-				writer.write(requestLine);
-				writer.write(_CRLF.toCharArray());
-				writer.flush();
 
-				writer.write(headers);
-				writer.write(_CRLF.toCharArray());
-				writer.flush();
+			writer.write(requestLine);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
 
-				writer.write(_CRLF.toCharArray());
-				writer.flush();
-				
-				if(!fetchContent){
-					BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			writer.write(headers);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
 
-					while((currentRecievedLine = reader.readLine()) != null){
-						response += currentRecievedLine + "\n";
-					}
-					System.out.println(response);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
 
-					res[0] = response;
-					res[1] = "";
+			if(!fetchContent){
+				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-					reader.close();
+				while((currentRecievedLine = reader.readLine()) != null){
+					response += currentRecievedLine + "\n";
+				}
+				System.out.println(response);
+
+				res[0] = response;
+				res[1] = "";
+
+				reader.close();
 
 			} else {
 				res = readHttpResponse(socket);
 			}
 			writer.close();
 			socket.close();
-			
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			throw new UnknownHostException();
 		} catch (IOException e) {
 			e.printStackTrace();
 			//throw new IOException();
-			
+
 		}
-		
+
 		return res;
 	}
 	//TODO: check if we can make it to one method instead of 2
@@ -109,7 +109,7 @@ public class HTTPQuery {
 		char[] m_MsgBodyCharBuffer;
 		StringBuilder m_MessageBodyBuilder;
 		String m_messageBodyString = "";
-		
+
 		try {
 			if (connection.isClosed()) {
 				return null;
@@ -127,7 +127,7 @@ public class HTTPQuery {
 				m_FullRequest += (line + "\n");
 				line = reader.readLine();
 			}
-			
+
 			boolean isChunked = m_FullRequest.indexOf("Transfer-Encoding: Chunked") > -1;
 			// Handle With Request that Contain Body Message
 			if (contentLength > 0 && !isChunked) {
@@ -149,20 +149,41 @@ public class HTTPQuery {
 			System.err.println("ERROR: IO Exception");
 			throw new IOException();
 		}
-		
+
 		return new String[]{m_FullRequest, m_messageBodyString};
 	}
-	
-	
+
+	/**
+	 * @Desc TODO
+	 * @param String response -> Response-String that has returned from a GET/HEAD request
+	 * @return String -> Content-Length from the message body (octets and represented in decimal) || null if failed. 
+	 */
+	public String getContentLengthFromResponse(String response){
+		String[] responseLines = response.split("\n");
+		String _contentLength = "Content-Length: ";
+		
+		String lengthValue = null;
+		
+		for(int i = 0; i < responseLines.length; i++){
+			String line = responseLines[i];
+			if(line.indexOf(_contentLength) > -1 && line.indexOf(" ") > -1){
+				lengthValue = (line.split(" "))[1];
+			}
+		}
+		return lengthValue;
+
+	}
+
+
 	public String parseContentLengthFromHttpResponse(String response){
 		String[] responseLines = response.split("\n");
 		String _contentLength = "Content-Length: ";
 		String _contentType = "Content-Type: ";
 		String _seperator = "#_#@#_#";
-		
+
 		String lengthValue = "";
 		String typeValue = "";
-		
+
 		for(int i = 0; i < responseLines.length; i++){
 			String line = responseLines[i];
 			if(line.indexOf(_contentLength) > -1 && line.indexOf(" ") > -1){
@@ -172,7 +193,7 @@ public class HTTPQuery {
 				typeValue = (line.split(" "))[1];
 			}
 		}
-		
+
 		return typeValue + _seperator + lengthValue;
 	}
 
@@ -184,8 +205,8 @@ public class HTTPQuery {
 		String lengthAndType = parseContentLengthFromHttpResponse(response);
 		return lengthAndType;
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param target : link to communicate with
@@ -194,7 +215,7 @@ public class HTTPQuery {
 	public String sendHttpHeadRequest(String target) throws IOException, UnknownHostException{
 		return (sendHttpRequest(target, "HEAD"))[0];
 	}
-	
+
 	/**
 	 * 
 	 * @param target : link to communicate with
