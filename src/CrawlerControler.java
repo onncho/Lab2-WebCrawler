@@ -122,8 +122,8 @@ public class CrawlerControler {
 		m_ReportPerDomain.addPorts(ports);
 	}
 
-	public void saveReport(){
-
+public void saveReport(){
+		
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
 		String htmlTemplate = "";
@@ -167,8 +167,14 @@ public class CrawlerControler {
 					htmlTemplate += m_ReportPerDomain.getNumOfExternalPages();
 					break;
 				case "#_AMOUNT$DOM$CONNECTED_#":
+					htmlTemplate += m_ReportPerDomain.getNumOfConnectedDomains();
+					break;
+				case "#_CRAWLED$DOMS$REPORTS_#":
 					htmlTemplate += m_ReportPerDomain.getFileNamesOfConnectedDomains();
-
+					break;
+				case "#_PORTS$OPEN_#"
+				case 
+					
 				}
 				htmlTemplate += lineFromReader;
 			}

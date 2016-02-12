@@ -147,6 +147,9 @@ public class ReportPerDomain {
 		}
 		return tableCol;
 	}
+	public int getNumOfOpenPorts(){
+		return ports.size();
+	}
 
 
 }
