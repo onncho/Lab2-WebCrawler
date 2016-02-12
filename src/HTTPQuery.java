@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -56,6 +57,7 @@ public class HTTPQuery {
 			String currentRecievedLine = "";
 			
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
+			socket.setSoTimeout(6000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			
 				writer.write(requestLine);
@@ -68,6 +70,7 @@ public class HTTPQuery {
 
 				writer.write(_CRLF.toCharArray());
 				writer.flush();
+				
 				if(!fetchContent){
 					BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -92,8 +95,10 @@ public class HTTPQuery {
 			throw new UnknownHostException();
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new IOException();
+			//throw new IOException();
+			
 		}
+		
 		return res;
 	}
 	//TODO: check if we can make it to one method instead of 2
