@@ -48,13 +48,13 @@ public class CrawlerClientUtil {
 				html += line;
 			}
 			
-			return null;
+			return replaceCrawlerFormInIndexHtml(html);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return html;
+		return null;
 		
 	}
 	
