@@ -159,19 +159,24 @@ public class HTTPQuery {
 	 * @return String -> Content-Length from the message body (octets and represented in decimal) || null if failed. 
 	 */
 	public String getContentLengthFromResponse(String response){
-		String[] responseLines = response.split("\n");
+		String lengthValue = null;
 		String _contentLength = "Content-Length: ";
 		
-		String lengthValue = null;
-		
-		for(int i = 0; i < responseLines.length; i++){
-			String line = responseLines[i];
-			if(line.indexOf(_contentLength) > -1 && line.indexOf(" ") > -1){
-				lengthValue = (line.split(" "))[1];
+		try{
+			String[] responseLines = response.split("\n");
+			for(int i = 0; i < responseLines.length; i++){
+				String line = responseLines[i];
+				if(line.indexOf(_contentLength) > -1 && line.indexOf(" ") > -1){
+					lengthValue = (line.split(" "))[1];
+				}
 			}
+		} catch (NullPointerException e){
+			System.out.println("---\nexception trace back inside HTTPQuery.getContentLengthFromResponse("+ response +")");
+			System.out.println(e);
+			System.out.println("---");
 		}
+		
 		return lengthValue;
-
 	}
 
 
