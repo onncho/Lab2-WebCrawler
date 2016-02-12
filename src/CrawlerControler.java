@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CrawlerControler {
 	
@@ -78,6 +79,10 @@ public class CrawlerControler {
 		m_ReportPerDomain.addNumOfExternalLinks();
 	}
 	
+	public void addPorts(ArrayList<Integer> ports) {
+		m_ReportPerDomain.addPorts(ports);
+	}
+	
 	public void saveReport(ReportPerDomain report){
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
@@ -132,4 +137,6 @@ public class CrawlerControler {
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

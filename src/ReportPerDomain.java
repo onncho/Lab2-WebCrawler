@@ -1,4 +1,5 @@
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class ReportPerDomain {
@@ -37,6 +38,7 @@ public class ReportPerDomain {
 		m_SizeOfVideos = 0;
 		m_NumInternalLinks = 0;
 		m_NumExternalLinks = 0;
+		ports = new LinkedList<>();
 	}
 	
 	//TODO: Debug
@@ -123,6 +125,12 @@ public class ReportPerDomain {
 	
 	public synchronized void addNumOfExternalLinks() {
 		m_NumExternalLinks++;
+	}
+	
+	public synchronized void addPorts(ArrayList<Integer> ports) {
+		if (ports != null) {
+			this.ports.addAll(ports);
+		}
 	}
 
 	

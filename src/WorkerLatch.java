@@ -1,13 +1,13 @@
 public class WorkerLatch {
 
 	private static WorkerLatch instance = new WorkerLatch();
-	private int counter = 0;
+	protected int counter = 0;
 
 	public static WorkerLatch getInstance() {
 		return instance;
 	}
 	
-	private WorkerLatch() {
+	protected WorkerLatch() {
 	}
 
 	public synchronized void down() {

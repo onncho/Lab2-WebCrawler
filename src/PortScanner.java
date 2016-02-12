@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class PortScanner {
+public class PortScanner implements Runnable {
 
 	//TODO: convert to multi-threaded
 
@@ -15,14 +15,17 @@ public class PortScanner {
 	private final String m_RegexDefinition; 
 	private final String m_RegexHttp;
 	private String m_TargetParsed;
+	private PortScannerLatch m_latch;
 	
-	public PortScanner(String i_Target, int i_StartPort, int i_EndPort) {
+	public PortScanner(String i_Target, int i_StartPort, int i_EndPort, PortScannerLatch i_latch) {
 		m_target = i_Target;
 		m_StartPort = i_StartPort;
 		m_EndPort = i_EndPort;
 		m_RegexDefinition = "^.[0-9]{1,3}/..[0-9]{1,3}/..[0-9]{1,3}/..[0-9]{1,3}";
 		m_RegexHttp = "http://";
 		m_TargetParsed = null;
+		m_latch = i_latch;
+		m_OpenPorts = new ArrayList<>();
 		getIpFromHost();
 	}
 
@@ -51,7 +54,7 @@ public class PortScanner {
 				Socket socket = new Socket();
 
 				if (m_TargetParsed != null) {					
-					socket.connect(new InetSocketAddress(m_TargetParsed, port), 1000);
+					socket.connect(new InetSocketAddress(m_TargetParsed, port), 200);
 				}
 
 				m_OpenPorts.add(port);
@@ -61,11 +64,16 @@ public class PortScanner {
 			{
 				System.out.println("Port : " + port + " is Closed");
 			}
-
 		}
-
 		return m_OpenPorts;
+	}
 
+	@Override
+	public void run() {
+		getIpFromHost();
+		ArrayList<Integer> ports = runScan();
+		CrawlerControler.getInstance().addPorts(ports);
+		m_latch.down();
 	}
 
 }
