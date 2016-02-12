@@ -9,6 +9,8 @@ public class CrawlerControler {
 	private static CrawlerControler instance = new CrawlerControler();
 	
 	private ReportPerDomain m_ReportPerDomain;
+	private DownloaderThreadPool m_DownloaderPool;
+	private AnalyzerThreadPool m_AnalyzerPool;
 	
 	public static CrawlerControler getInstance() {
 		return instance;
@@ -16,8 +18,19 @@ public class CrawlerControler {
 	
 	private CrawlerControler() {
 		
-		// TODO: get domain
+		// TODO: get domain get from config.ini
 		m_ReportPerDomain = new ReportPerDomain("domain");
+		m_DownloaderPool = new DownloaderThreadPool(10);
+		m_AnalyzerPool = new AnalyzerThreadPool(2);
+	}
+	
+	
+	public void addTaskToDownloaderQueue(Runnable task) {
+		m_DownloaderPool.putTaskInDownloaderQueue(task);
+	}
+	
+	public void addTaskToAnalyzerQueue(Runnable task) {
+		m_AnalyzerPool.putTaskInAnalyzerQueue(task);
 	}
 	
 	// All Method need to be accessed

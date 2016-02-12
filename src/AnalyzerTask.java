@@ -19,7 +19,7 @@ public class AnalyzerTask implements Runnable {
 
 	HTTPQuery query;
 
-	DownloaderThreadPool m_DownloaderThreadPool;
+	//DownloaderThreadPool m_DownloaderThreadPool;
 
 	String m_htmlSourceCode;
 	URI m_uri;
@@ -28,9 +28,8 @@ public class AnalyzerTask implements Runnable {
 
 	//LinkReport m_report;
 
-	public AnalyzerTask(String i_htmlSourceCode, DownloaderThreadPool i_threadPool, 
-			String i_pageAddress) throws URISyntaxException {
-		m_DownloaderThreadPool = i_threadPool;
+	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
+		//m_DownloaderThreadPool = i_threadPool;
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_pageAddress = i_pageAddress;
 		m_sizeAndTypeOfPage = 0;
@@ -60,20 +59,27 @@ public class AnalyzerTask implements Runnable {
 		lookForAnchorsAndPopulate();
 		lookForImagesAndPopulate();
 
-		fetchResourcesFounedAndAddToReport();
+		try {
+			fetchResourcesFounedAndAddToReport();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// send all internal link to downloader queue
 		LinkedList<String> internalLinksToDownload = getInternalAnchors();
 		
 		for(int i = 0; i < internalLinksToDownload.size(); i++){
-			// add the letch
-			WorkerLatch.getInstance().up();
 			System.out.println(String.format("Sending to downloader: %S", internalLinksToDownload.get(i)));
-			DownloaderTask downloader = new DownloaderTask(, internalLinksToDownload.get(i));
-			m_DownloaderThreadPool.putTaskInDownloaderQueue((Runnable) downloader);
+			
+			DownloaderTask downloader = new DownloaderTask(internalLinksToDownload.get(i));
+			CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
 		}
 
-		m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
+		//m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
 	}
 
 	private LinkedList<String> getInternalAnchors() {
