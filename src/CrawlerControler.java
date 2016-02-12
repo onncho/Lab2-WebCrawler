@@ -19,7 +19,7 @@ public class CrawlerControler {
 	private CrawlerControler() {
 		
 		// TODO: get domain get from config.ini
-		m_ReportPerDomain = new ReportPerDomain("domain");
+		m_ReportPerDomain = new ReportPerDomain("http://www.naon-serv.co.il");
 		m_DownloaderPool = new DownloaderThreadPool(10);
 		m_AnalyzerPool = new AnalyzerThreadPool(2);
 	}
