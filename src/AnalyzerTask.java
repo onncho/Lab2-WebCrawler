@@ -61,12 +61,12 @@ public class AnalyzerTask implements Runnable {
 		lookForImagesAndPopulate();
 
 		try {
-			
+
 			// add to Report
 			addToDomainReport();
 			for(int i = 0; i < m_internalAnchors.size(); i++){
 				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
-				
+
 				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
 				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
 			}
@@ -77,18 +77,10 @@ public class AnalyzerTask implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		// send all internal link to downloader queue
 		//LinkedList<String> internalLinksToDownload = getInternalAnchors();
-		
-		
-
 		//m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
 	}
-
-	/*private LinkedList<String> getInternalAnchors() {
-		return m_internalAnchors;
-	}*/
 
 	private void lookForImagesAndPopulate(){
 		getAllPropertiesValueByTagAndPopulateLists("<img", "src=");
@@ -98,10 +90,10 @@ public class AnalyzerTask implements Runnable {
 		getAllPropertiesValueByTagAndPopulateLists("<a", "href=");
 	}
 
+	
+	//String subjectTag = "<a";
+	//String propertyToSearchFor = "href=";
 	private void getAllPropertiesValueByTagAndPopulateLists(String subjectTag, String propertyToSearchFor){
-
-		//String subjectTag = "<a";
-		//String propertyToSearchFor = "href=";
 
 		int currentIndex = m_htmlSourceCode.indexOf(subjectTag);
 
@@ -131,7 +123,6 @@ public class AnalyzerTask implements Runnable {
 
 			currentIndex = m_htmlSourceCode.indexOf(subjectTag, currentIndex + subjectTag.length());
 		}
-
 	}
 
 	private int populateCorrectList(String linkToMap){
@@ -158,24 +149,23 @@ public class AnalyzerTask implements Runnable {
 				}
 			}
 			else {
-
 				populateAnchors(linkToMap, ext);
-				
 				break;
 			}
 			i++;
 		}
+		
 		return i;
 	}
 
-	
+
 	/**
-	 * 
+	 * The Link is internal or External
 	 * ASSUMING THIS METHOD WILL BE CALLED ONLY !!WITH!! attachAbsoluteUrlToLink() output as input
 	 */
 	private boolean isUrlInternal(String href){
 		System.out.println("check if this -> " + href + " is internal");
-		
+
 		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
 			//external so false for internal
 			System.out.println("href -> " + href + " was found as external :( -1");
@@ -195,6 +185,7 @@ public class AnalyzerTask implements Runnable {
 		return false;
 	}
 	
+	// fix links for future use
 	private String attachAbsoluteUrlToLink(String href){
 		if(href == null) {return null;}
 		String absoluteURL = "";
@@ -208,7 +199,7 @@ public class AnalyzerTask implements Runnable {
 		else if(indexOfSolamitInLink > 0){
 			href = href.substring(0, indexOfSolamitInLink);
 		}
-		
+
 		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
 			//external
 			absoluteURL = href;
@@ -226,29 +217,30 @@ public class AnalyzerTask implements Runnable {
 		}
 		return absoluteURL;
 	}
+
+
 	
-	
-	
+/*
 	// internal "/path../../somePage.html" , "path../../somePage.html", http://thisDomain/path/somePage.html, www.thisDomain
 	//
 	// h / # w ?
 	// remove suffix #suffix -> "/text/internallinks.html#section-names"
-	// drop
+	// TODO: del, version2
 	private String reformatAnchorLink(String link){// buildCorrectLink(String link){
 		String temp = "\n\n--> input link = " + link;
 		String stringToReturn = "";
 		String host = m_uri.getHost();
-		
+
 		char firstChar = link.charAt(0);
 		int linkLength = link.length();
-		
+
 		if(firstChar == '#' || (firstChar == '/' && linkLength == 1)){
 			return null;
 		}
-		
+
 		link = (link.startsWith("/")) ? link.substring(1) : link;
 		link = (link.endsWith("/")) ? link.substring(0, linkLength) : link;
-		
+
 		int indexOfSolamitInLink = link.indexOf('#');
 		if(indexOfSolamitInLink > 0){
 			link = link.substring(0, indexOfSolamitInLink);
@@ -256,49 +248,13 @@ public class AnalyzerTask implements Runnable {
 		link = link.startsWith("http://") == false ? (link) : (link.substring(7));
 		stringToReturn = "http://" + host + link;
 		if(link.startsWith("www.")){
-			 stringToReturn = "http://" + link;
+			stringToReturn = "http://" + link;
 		}
 		temp += "\n\n--> output link = " + stringToReturn;
 		System.out.println(temp);
-		return stringToReturn;
-		
-		
+		return stringToReturn;	
 	}
-	
-	
-	// TODO: rejecting any line formatted without "http"/s "/" 
-	// http://
-	private String buildCorrectLink(String link){//reformatAnchorLink
-		String repsDELETE = "---> LINE 167 :: reformatAnchorLink ( " + link + " ) \n";
-		String linkLowered = link.toLowerCase();
-		String verifiedLink;
-
-		repsDELETE += "---> LINE 171 :: pre 1st IF --> link = " + link + " \n";
-		if (link.charAt(link.length() - 1) == '#' || (link.charAt(link.length() - 1) == '/' && link.length() > 1)) {
-			System.out.println(repsDELETE);
-			System.out.println("---> LINE 173 :: inside 1st IF --> returns NULL on link = " + link + "<--");
-			return null; 
-		}
-		repsDELETE += "---> LINE 177 :: post 1st IF no change to link --> enters 2nd IF on line 179";
-		//System.out.println(repsDELETE);
-		// check if the link is internal
-		if(linkLowered.indexOf("/") == 0) {
-			verifiedLink = "http://" + m_uri.getPath() + link.toLowerCase();
-		} else {
-			if(linkLowered.indexOf("http://") != 0 && linkLowered.indexOf("https://") != 0){
-				//TODO: deals with sub-domains
-				verifiedLink = (linkLowered.indexOf(m_uri.getHost()) == -1) ? "http://" + m_uri.getHost() + "/" +linkLowered : "http://" + linkLowered; 
-			} else {
-				verifiedLink = linkLowered;
-			}
-			
-		}
-		repsDELETE += "---> LINE 191 :: ABOUT TO EXIT reformatAnchorLink ( " + link + " )  output --> " + verifiedLink + "\n------\n------";
-		System.out.println(repsDELETE);
-		return verifiedLink;
-	}
-
-
+*/
 	/**
 	 * @param link -> anchor to be added to the external or internal lists if doesn't already exists
 	 * @return true on success
@@ -309,17 +265,16 @@ public class AnalyzerTask implements Runnable {
 		ext = (ext == null) ? "" : ext;
 		boolean inserted = false;
 		if (formattedLink != null) {
-			
-				//linkURI = new URI(formattedLink);
-				boolean isInternal = isUrlInternal(formattedLink);
-				//if(linkURI.getHost().equals(m_uri.getHost())){
-				if(isInternal && (ext.equals("") || ext.equals("html"))){
-					//m_internalAnchors.push(formattedLink);
-					inserted = pushIfNotExists(m_internalAnchors, formattedLink);
-				} else {
-					inserted = pushIfNotExists(m_externalAnchors, formattedLink);
-				}
-						
+
+			//linkURI = new URI(formattedLink);
+			boolean isInternal = isUrlInternal(formattedLink);
+			//if(linkURI.getHost().equals(m_uri.getHost())){
+			if(isInternal && (ext.equals("") || ext.equals("html"))){
+				//m_internalAnchors.push(formattedLink);
+				inserted = pushIfNotExists(m_internalAnchors, formattedLink);
+			} else {
+				inserted = pushIfNotExists(m_externalAnchors, formattedLink);
+			}		
 		}
 
 		return inserted;
@@ -332,14 +287,14 @@ public class AnalyzerTask implements Runnable {
 	 * @return true if member was added , false otherwise
 	 */
 	private boolean pushIfNotExists(LinkedList<String> set, String member){
-
 		boolean exists = listContainsElement(set, member);
+		
 		if(!exists){
 			set.push(member);
 		}
+		
 		return !exists;
 	}
-
 
 	private String getExtensionFromString(String linkToMap) {
 		String ext = null;
@@ -365,7 +320,7 @@ public class AnalyzerTask implements Runnable {
 		return str.substring(1, str.length());
 	}
 
-	// 
+	
 	private void addToDomainReport() throws IOException, Exception {
 
 		fetchAllFromList(m_images, 0);
@@ -376,14 +331,14 @@ public class AnalyzerTask implements Runnable {
 
 	}
 
-//	//TODO: del
-//	private void fetchFromInternalLinks(){
-//		for(int i = 0; i < m_internalAnchors.size(); i++){
-//			String address = m_internalAnchors.get(i);
-//			//Link link = new Link(address, "" , "", "0");
-//			//m_report.addInternalPageLink(link);
-//		}
-//	}
+	//	//TODO: del
+	//	private void fetchFromInternalLinks(){
+	//		for(int i = 0; i < m_internalAnchors.size(); i++){
+	//			String address = m_internalAnchors.get(i);
+	//			//Link link = new Link(address, "" , "", "0");
+	//			//m_report.addInternalPageLink(link);
+	//		}
+	//	}
 
 	/**
 	 * @TODO pages in links, are going to be downloaded anyway and will have own reports
@@ -400,16 +355,16 @@ public class AnalyzerTask implements Runnable {
 	}
 
 	private void tryInsertToDB(String url, int identifier) {
-		
+
 		if (!CrawlerDB.getInstance().linkExist(url)) {
 			CrawlerDB.getInstance().addDownloadLink(url);
 			String response = "";
-			
+
 			// TODO: check what's happens when response with exception
 			// TODO: CHECK COMMENT ABOVE IDENTIFIER = 0
 			try {
 				response = query.sendHttpHeadRequestV2(url);
-				
+
 				String len = "";
 				try {
 					if(response == null){
@@ -423,10 +378,10 @@ public class AnalyzerTask implements Runnable {
 					}
 					len = query.getContentLengthFromResponse(response);
 				} catch (ArrayIndexOutOfBoundsException error) {
-					response = query.sendHttpHeadRequest(url);
+					response = query.sendHttpHeadRequestV2(url);
 					len = query.getContentLengthFromResponse(response);
 				}
-				
+
 				// TODO: Some HEAD request don't provide Content-Length to their response
 				// Solution A: send GET request only for the Response String, B: ignore this.
 				// image
@@ -448,7 +403,7 @@ public class AnalyzerTask implements Runnable {
 				else if (identifier == 3) {
 					CrawlerControler.getInstance().addNumOfExternalLinks();
 				}
-				
+
 			} catch (UnknownHostException e) {
 				System.out.println("failed send heads request -> link " + url);
 				e.printStackTrace();
@@ -456,19 +411,8 @@ public class AnalyzerTask implements Runnable {
 				e.printStackTrace();
 				System.out.println("failed send heads request -> link " + url);
 			}
-			
-			
+
+
 		}
 	}
-
-/*
-	private LinkReport createReport(){
-		String size = m_sizeAndTypeOfPage.split("#_#@#_#")[1];
-		int sizeInBytes = Integer.parseInt(size);
-		LinkReport report = new LinkReport(m_pageAddress, sizeInBytes);
-		return report;
-	}
- */
-
-
 }

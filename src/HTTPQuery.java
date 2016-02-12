@@ -14,6 +14,7 @@ public class HTTPQuery {
 
 	final String _CRLF = "\r\n";
 
+	// read chunks data from requests
 	private String readChunksFromBufferedReader(BufferedReader reader){
 		String chunkSizeAsString;
 		String messageBody = "";
@@ -38,12 +39,8 @@ public class HTTPQuery {
 		return null;
 	}
 
-	
-	
-	
-	
 	///////V2
-	
+	// send any request to specific target
 	public String[] sendHttpRequestV2(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
@@ -61,11 +58,8 @@ public class HTTPQuery {
 			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
 			String headers = "Host: " + host;
 
-
-			
-
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
-			socket.setSoTimeout(7000);
+			socket.setSoTimeout(6000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 
 			writer.write(requestLine);
@@ -86,8 +80,8 @@ public class HTTPQuery {
 					response += currentRecievedLine + "\n";
 					currentRecievedLine = reader.readLine();
 				}
-				
-				System.out.println(response);
+
+				//System.out.println(response);
 
 				res[0] = response;
 				res[1] = "";
@@ -106,21 +100,15 @@ public class HTTPQuery {
 		} catch (IOException e) {
 			e.printStackTrace();
 			//throw new IOException();
-
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return res;
 	}
-	
-	
-	
-	/////////V2
-	
-	
-	
+
+
+	//TODO: del?
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
@@ -249,7 +237,7 @@ public class HTTPQuery {
 	public String getContentLengthFromResponse(String response){
 		String lengthValue = null;
 		String _contentLength = "Content-Length: ";
-		
+
 		try{
 			String[] responseLines = response.split("\n");
 			for(int i = 0; i < responseLines.length; i++){
@@ -263,7 +251,7 @@ public class HTTPQuery {
 			System.out.println(e);
 			System.out.println("---");
 		}
-		
+
 		return lengthValue;
 	}
 
@@ -291,10 +279,11 @@ public class HTTPQuery {
 	}
 
 	// <img src="www.ynet.co.il/image/logo_2.png ...>
-	//
+	// TODO: to del?
 	//
 	public String sendHttpHeadRequestAndGetTypeAndLengthFromResponse(String target) throws UnknownHostException, IOException{
-		String response = sendHttpRequest(target, "HEAD")[0];
+		//String response = sendHttpRequest(target, "HEAD")[0];
+		String response = sendHttpHeadRequestV2(target);
 		String lengthAndType = parseContentLengthFromHttpResponse(response);
 		return lengthAndType;
 	}
@@ -305,10 +294,6 @@ public class HTTPQuery {
 	 * @param target : link to communicate with
 	 * @return Response
 	 */
-	public String sendHttpHeadRequest(String target) throws IOException, UnknownHostException{
-		return (sendHttpRequest(target, "HEAD"))[0];
-	}
-	
 	public String sendHttpHeadRequestV2(String target) throws IOException, UnknownHostException{
 		return (sendHttpRequestV2(target, "HEAD"))[0];
 	}
@@ -319,17 +304,17 @@ public class HTTPQuery {
 	 * @return String Array -> [Response, Response-Mesaage-Body]
 	 */
 	public String[] sendHttpGetRequest(String target) throws IOException, UnknownHostException{
-		return sendHttpRequest(target, "GET");
+		return sendHttpRequestV2(target, "GET");
 	}
-	
-	
+
+
 	/////////// INTERCEPT GET 
-	
+	// Trick for Get request to receive HEAD
 	public String sendHttpGETRequestAndInterceptBeforeBody(String target) throws IOException, UnknownHostException{
-		
+
 		String response = "";
 		String requestType = "GET";
-		
+
 		try {
 			if(!target.startsWith("http")){
 				target = "http://" + target;
@@ -342,9 +327,9 @@ public class HTTPQuery {
 
 			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
 			String headers = "Host: " + host;
-			
+
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
-			socket.setSoTimeout(7000);
+			socket.setSoTimeout(6000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 
 			writer.write(requestLine);
@@ -358,25 +343,20 @@ public class HTTPQuery {
 			writer.write(_CRLF.toCharArray());
 			writer.flush();
 
-			
-				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-				//
-				String line = reader.readLine();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-				// Read Request According to Http Protocol
-				while (line != null && !line.equals("")) {
-					
-					response += (line + "\n");
-					line = reader.readLine();
-				}
+			String line = reader.readLine();
 
-				reader.close();
+			// Read Request According to Http Protocol
+			while (line != null && !line.equals("")) {
+				response += (line + "\n");
+				line = reader.readLine();
+			}
 
-			
+			reader.close();
 			writer.close();
 			socket.close();
-
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			throw new UnknownHostException();
@@ -391,11 +371,4 @@ public class HTTPQuery {
 
 		return response;
 	}
-	
-	
-	
-	
-	
-	///////////
-
 }
