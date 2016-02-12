@@ -412,6 +412,15 @@ public class AnalyzerTask implements Runnable {
 				
 				String len = "";
 				try {
+					if(response == null){
+						System.out.println(" response for the following url -> " + url + "was null...");
+						response = query.sendHttpGETRequestAndInterceptBeforeBody(url);
+						if(response == null){
+							System.out.println("response after GETintercept still null... = " + url);
+						} else {
+							System.out.println("response was recieved fine with getIntercept -->" + response + "\n----");
+						}
+					}
 					len = query.getContentLengthFromResponse(response);
 				} catch (ArrayIndexOutOfBoundsException error) {
 					response = query.sendHttpHeadRequest(url);

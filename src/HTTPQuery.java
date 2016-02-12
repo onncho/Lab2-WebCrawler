@@ -234,5 +234,81 @@ public class HTTPQuery {
 	public String[] sendHttpGetRequest(String target) throws IOException, UnknownHostException{
 		return sendHttpRequest(target, "GET");
 	}
+	
+	
+	/////////// INTERCEPT GET 
+	
+	public String sendHttpGETRequestAndInterceptBeforeBody(String target) throws IOException, UnknownHostException{
+		
+		String response = "";
+		String requestType = "GET";
+		
+		try {
+			if(!target.startsWith("http")){
+				target = "http://" + target;
+			}
+			URI uri = new URI(target);
+
+			String host = uri.getHost();
+			String path = uri.getPath();
+			path = path.equals("") ? "/" : path;
+
+			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
+			String headers = "Host: " + host;
+			
+			Socket socket = new Socket(InetAddress.getByName(host), 80);
+			socket.setSoTimeout(7000);
+			PrintWriter writer = new PrintWriter(socket.getOutputStream());
+
+			writer.write(requestLine);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			writer.write(headers);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			
+				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+				//
+				String line = reader.readLine();
+
+				// Read Request According to Http Protocol
+				while (line != null && !line.equals("")) {
+					
+					response += (line + "\n");
+					line = reader.readLine();
+				}
+
+				reader.close();
+
+			
+			writer.close();
+			socket.close();
+
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			throw new UnknownHostException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			//throw new IOException();
+
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}
+	
+	
+	
+	
+	
+	///////////
 
 }
