@@ -38,6 +38,38 @@ public class ReportPerDomain {
 		m_NumExternalLinks = 0;
 	}
 	
+	public int getNumOfDocuments(){
+		return m_NumOfDocuments;
+	}
+	public int getSizeOfDocuments(){
+		return m_SizeOfDocuments;
+	}
+	public int getNumOfVideos(){
+		return m_NumOfVideos;
+	}
+	public int getSizeOfVideos(){
+		return m_SizeOfVideos;
+	}
+	
+	public int getNumOfImages(){
+		return m_NumOfImages;
+	}
+	public int getSizeOfImages(){
+		return m_SizeOfImages;
+	}
+	
+	public int getNumtOfInternalPages(){
+		return m_NumInternalLinks;
+	}
+	public int getSizeOfInternalPages(){
+		return m_
+	}
+	
+	public int getAmountOfExternalPages(){}
+	public int getSizeOfExternalPages(){}
+	
+	
+	
 	public synchronized void addNumOfDocs() {
 		m_NumOfDocuments++;
 	}

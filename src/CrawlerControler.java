@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class CrawlerControler {
 	
@@ -54,5 +59,21 @@ public class CrawlerControler {
 	
 	public void addNumOfExternalLinks() {
 		m_ReportPerDomain.addNumOfExternalLinks();
+	}
+	
+	public void saveReport(ReportPerDomain report){
+		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
+		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
+		String htmlTemplate = "";
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(fileToOpen));
+			String lineFromReader;
+			while((lineFromReader = reader.readLine()) != null){
+				htmlTemplate += lineFromReader;
+			}
+		} catch (FileNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
