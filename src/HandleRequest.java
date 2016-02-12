@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class HandleRequest implements Runnable {
 
@@ -130,11 +131,49 @@ public class HandleRequest implements Runnable {
 
 	// create http request and response
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
+		HTTPResponse res;
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-		HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+		
+		if(!checkForCrawler(req)){
+			// user did not asked for crawler or requested domain coudln't be found under params, there for going 
+			// normal process
+			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+			
+		} else {
+			// starting crawling and there for need to hold the entire flow until when the crawler will finish
+			res = crawlerFlow(req);
+		}
 		return res;
 	}
 
+
+	private boolean checkForCrawler(HTTPRequest req) {
+		boolean clientAsksForCrawler = req.m_RequestedPage.equals("/execResult.html");
+		if(req.m_HttpRequestParams == null || clientAsksForCrawler == false) {return false;}//returning false since in this case we will go for normal response
+		if(!req.m_HttpRequestParams.containsKey("domainToCrawl")){
+			return false;
+		}
+		return true;
+		
+	}
+
+	private HTTPResponse crawlerFlow(HTTPRequest req){
+		HashMap<String,String> copyOfParams = req.m_HttpRequestParams;
+		boolean checkForPortsParamExists = copyOfParams.containsKey("PortScanChecked");
+		boolean respectRobotsTxtExists = copyOfParams.containsKey("RobotsChecked");
+
+
+		String domainToCrawl = copyOfParams.get("domainToCrawl");
+		boolean checkForPorts = checkForPortsParamExists ? copyOfParams.get("PortScanChecked") == "Checked" : false;
+		boolean respectRobotsTxt = respectRobotsTxtExists ? copyOfParams.get("RobotsChecked") == "Checked" : false;
+		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt);
+
+	}
+	
+	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	private void writeChunkData(File file, DataOutputStream writer){
 

@@ -68,12 +68,10 @@
                 font-family: ‘Courier New’, Courier, monospace;
                 font-size: 15px;
                 padding: 5px;
-                width: 60px;
             }
 
             .form-style {
                 margin:10px auto;
-                max-width: 400px;
                 padding: 20px 12px 10px 20px;
                 font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
             }
@@ -147,12 +145,12 @@
         <div class="container">
 
             <!-- Form containing : Sender, Receiver, Subject, Message Field, and Submit bottom. -->
-            <form method = "POST" action = "/params_info.html">
+            <form method = "GET" action = "/execResult.html">
                 <a name="myForm">
                 <ul class="form-style">
                 <li>
                     <label>Domain Name</label>
-                    <input type="text" name="sender" class="field-divided" placeholder="Sender"                     />
+                    <input type="text" name="domainToCrawl" class="field-divided" placeholder="Enter a domain to crawl"/>
                 </li>
                 <li>
                      <input type="checkbox" name="PortScanChecked" class="field-devided" value="Checked"> Perform full TCP port scan
