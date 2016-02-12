@@ -194,6 +194,7 @@ public class AnalyzerTask implements Runnable {
 			 stringToReturn = "http://" + link;
 		}
 		temp += "\n\n--> output link = " + stringToReturn;
+		System.out.println(temp);
 		return stringToReturn;
 		
 		
