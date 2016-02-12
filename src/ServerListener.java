@@ -40,7 +40,7 @@ public class ServerListener {
 			Socket connection = serverSocket.accept();
 			HandleRequest handleRequest = new HandleRequest(connection);
 			//this.m_threadPool.push(handleRequest);
-			m_tPool.putTaskInAnalyzerQueue(handleRequest);
+			m_tPool.putTaskInDownloaderQueue(handleRequest);
 		}
 	}
 }

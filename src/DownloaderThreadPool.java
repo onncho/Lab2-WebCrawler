@@ -1,6 +1,6 @@
 
 public class DownloaderThreadPool {
-
+	 
 	SynchronizedQueueLL m_DownloaderQueue;
 	
 	// create collection of workers
@@ -21,7 +21,7 @@ public class DownloaderThreadPool {
 	}
 	
 	// add task in Analyzer queue
-	public void putTaskInAnalyzerQueue(Runnable task) {
+	public void putTaskInDownloaderQueue(Runnable task) {
 		synchronized (m_DownloaderQueue) {
 			//up the latch counter
 			WorkerLatch.getInstance().up();
