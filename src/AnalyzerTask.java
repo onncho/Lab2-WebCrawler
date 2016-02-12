@@ -157,7 +157,8 @@ public class AnalyzerTask implements Runnable {
 			}
 			else {
 
-				populateAnchors(linkToMap);
+				populateAnchors(linkToMap, ext);
+				
 				break;
 			}
 			i++;
@@ -304,17 +305,17 @@ public class AnalyzerTask implements Runnable {
 	 * @param link -> anchor to be added to the external or internal lists if doesn't already exists
 	 * @return true on success
 	 */
-	private boolean populateAnchors(String link){
+	private boolean populateAnchors(String link, String ext){
 
 		String formattedLink = attachAbsoluteUrlToLink(link);//reformatAnchorLink(link);
-		
+		ext = (ext == null) ? "" : ext;
 		boolean inserted = false;
 		if (formattedLink != null) {
 			
 				//linkURI = new URI(formattedLink);
 				boolean isInternal = isUrlInternal(formattedLink);
 				//if(linkURI.getHost().equals(m_uri.getHost())){
-				if(isInternal){
+				if(isInternal && (ext.equals("") || ext.equals("html"))){
 					//m_internalAnchors.push(formattedLink);
 					inserted = pushIfNotExists(m_internalAnchors, formattedLink);
 				} else {
