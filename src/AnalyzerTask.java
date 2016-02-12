@@ -168,8 +168,9 @@ public class AnalyzerTask implements Runnable {
 	//
 	// h / # w ?
 	// remove suffix #suffix -> "/text/internallinks.html#section-names"
-	// drop immidietly href="#..."
-	private String buildCorrectLink(String link){
+	// drop
+	private String reformatAnchorLink(String link){// buildCorrectLink(String link){
+		String temp = "\n\n--> input link = " + link;
 		String stringToReturn = "";
 		String host = m_uri.getHost();
 		
@@ -189,9 +190,11 @@ public class AnalyzerTask implements Runnable {
 		}
 		link = link.startsWith("http://") == false ? (link) : (link.substring(7));
 		stringToReturn = "http://" + host + link;
-		link = link.startsWith("www.") ? link.substring(4) : link;
-		
-		return "http://" + host + link;
+		if(link.startsWith("www.")){
+			 stringToReturn = "http://" + link;
+		}
+		temp += "\n\n--> output link = " + stringToReturn;
+		return stringToReturn;
 		
 		
 	}
@@ -199,7 +202,7 @@ public class AnalyzerTask implements Runnable {
 	
 	// TODO: rejecting any line formatted without "http"/s "/" 
 	// http://
-	private String reformatAnchorLink(String link){
+	private String buildCorrectLink(String link){//reformatAnchorLink
 		String repsDELETE = "---> LINE 167 :: reformatAnchorLink ( " + link + " ) \n";
 		String linkLowered = link.toLowerCase();
 		String verifiedLink;
@@ -241,10 +244,10 @@ public class AnalyzerTask implements Runnable {
 		boolean inserted = false;
 		if (formattedLink != null) {
 			try {
-				System.out.println("yoyo " + formattedLink);
+				
 				if(formattedLink.indexOf("http:///") == 0){
 					formattedLink = formattedLink.substring(0, 7);
-					System.out.println("yoyo22 " + formattedLink);
+					
 				}
 				linkURI = new URI(formattedLink);
 				if(linkURI.getHost().equals(m_uri.getHost())){
