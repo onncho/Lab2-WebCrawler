@@ -1,4 +1,3 @@
-package webserver;
 import java.util.HashMap;
 
 public class HTTPRequest {
