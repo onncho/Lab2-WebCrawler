@@ -38,6 +38,7 @@ public class WebServer {
 			
 	}
 	
+	//TODO: Domain transfer
 	private static void startPortScanner() {
 		Thread[] scanners = new Thread[Number_Of_Downloaders];
 		int startScanPort = 0;
