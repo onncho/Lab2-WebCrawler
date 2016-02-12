@@ -167,7 +167,7 @@ public class AnalyzerTask implements Runnable {
 		String linkLowered = link.toLowerCase();
 		String verifiedLink;
 
-		if (link.charAt(link.length() - 1) == '#') {			
+		if (link.charAt(link.length() - 1) == '#' || link.charAt(link.length() - 1) == '/') {			
 			return null; 
 		}
 

@@ -20,10 +20,14 @@ public class WebServer {
 
 		//webserver.start();
 		
-		DownloaderThreadPool threadP = new DownloaderThreadPool(10);
-		ServerListener webSrv = new ServerListener(threadP);
+		//DownloaderThreadPool threadP = new DownloaderThreadPool(10);
+		//ServerListener webSrv = new ServerListener(threadP);
 		
-		webSrv.start();
+		//webSrv.start();
+		
+		CrawlerControler.getInstance();
+		DownloaderTask task = new DownloaderTask("http://www.naon-serv.co.il");
+		CrawlerControler.getInstance().addTaskToDownloaderQueue(task);
 		
 	}
 

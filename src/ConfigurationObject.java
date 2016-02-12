@@ -43,10 +43,10 @@ public class ConfigurationObject {
 		m_documentExtensions = (LinkedList<String>) parseStringToList(i_confList.get("documentExtensionsNotParsed"));	
 	}
 	
-	private List<String> parseStringToList(String i_stringToParse) {
+	private LinkedList<String> parseStringToList(String i_stringToParse) {
 		i_stringToParse.trim();
 		String[] values = i_stringToParse.split(",");	
-		List<String> res = new LinkedList<String>();
+		LinkedList<String> res = new LinkedList<>();
 		
 		for(String val : values)
 		{

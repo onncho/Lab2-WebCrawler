@@ -139,7 +139,7 @@ public class HandleRequest implements Runnable {
 		if(!checkForCrawler(req)){
 			
 			if(req.m_RequestedPage.equals("getCrawlerReport.html")){
-				crawlerUtil.
+				
 			}
 			// user did not asked for crawler or requested domain coudln't be found under params, there for going 
 			// normal process

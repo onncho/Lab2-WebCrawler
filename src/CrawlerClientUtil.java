@@ -36,6 +36,7 @@ public class CrawlerClientUtil {
 			crawlerTakenByDomain = domain;
 			switchLock();
 		}
+		return true;
 	}
 	
 	public String getJStoAddToExecResults(String domain){
