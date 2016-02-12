@@ -162,7 +162,39 @@ public class AnalyzerTask implements Runnable {
 		return i;
 	}
 
+
 	
+	// internal "/path../../somePage.html" , "path../../somePage.html", http://thisDomain/path/somePage.html, www.thisDomain
+	//
+	// h / # w ?
+	// remove suffix #suffix -> "/text/internallinks.html#section-names"
+	// drop immidietly href="#..."
+	private String buildCorrectLink(String link){
+		String stringToReturn = "";
+		String host = m_uri.getHost();
+		
+		char firstChar = link.charAt(0);
+		int linkLength = link.length();
+		
+		if(firstChar == '#' || (firstChar == '/' && linkLength == 1)){
+			return null;
+		}
+		
+		link = (link.startsWith("/")) ? link.substring(1) : link;
+		link = (link.endsWith("/")) ? link.substring(0, linkLength) : link;
+		
+		int indexOfSolamitInLink = link.indexOf('#');
+		if(indexOfSolamitInLink > 0){
+			link = link.substring(0, indexOfSolamitInLink);
+		}
+		link = link.startsWith("http://") == false ? (link) : (link.substring(7));
+		stringToReturn = "http://" + host + link;
+		link = link.startsWith("www.") ? link.substring(4) : link;
+		
+		return "http://" + host + link;
+		
+		
+	}
 	
 	
 	// TODO: rejecting any line formatted without "http"/s "/" 
