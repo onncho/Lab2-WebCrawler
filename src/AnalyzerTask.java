@@ -407,6 +407,29 @@ public class AnalyzerTask implements Runnable {
 			// TODO: check what's happens when response with exception
 			try {
 				response = query.sendHttpHeadRequest(url);
+				
+				String len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
+				
+				// image
+				if (identifier == 0) {
+					CrawlerControler.getInstance().addNumOfImages();
+					CrawlerControler.getInstance().sumSizeOfImages(Integer.parseInt(len));
+				} 
+				//video 
+				else if (identifier == 1) {
+					CrawlerControler.getInstance().addNumOfVideos();
+					CrawlerControler.getInstance().sumSizeOfVideos(Integer.parseInt(len));
+				}
+				//doc
+				else if (identifier == 2) {
+					CrawlerControler.getInstance().addNumOfDocs();
+					CrawlerControler.getInstance().sumSizeOfDocs(Integer.parseInt(len));
+				}
+				// external link
+				else if (identifier == 3) {
+					CrawlerControler.getInstance().addNumOfExternalLinks();
+				}
+				
 			} catch (UnknownHostException e) {
 				System.out.println("failed send heads request -> link " + url);
 				e.printStackTrace();
@@ -415,27 +438,7 @@ public class AnalyzerTask implements Runnable {
 				System.out.println("failed send heads request -> link " + url);
 			}
 			
-			String len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
 			
-			// image
-			if (identifier == 0) {
-				CrawlerControler.getInstance().addNumOfImages();
-				CrawlerControler.getInstance().sumSizeOfImages(Integer.parseInt(len));
-			} 
-			//video 
-			else if (identifier == 1) {
-				CrawlerControler.getInstance().addNumOfVideos();
-				CrawlerControler.getInstance().sumSizeOfVideos(Integer.parseInt(len));
-			}
-			//doc
-			else if (identifier == 2) {
-				CrawlerControler.getInstance().addNumOfDocs();
-				CrawlerControler.getInstance().sumSizeOfDocs(Integer.parseInt(len));
-			}
-			// external link
-			else if (identifier == 3) {
-				CrawlerControler.getInstance().addNumOfExternalLinks();
-			}
 		}
 	}
 
