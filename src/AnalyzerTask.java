@@ -408,7 +408,7 @@ public class AnalyzerTask implements Runnable {
 			// TODO: check what's happens when response with exception
 			// TODO: CHECK COMMENT ABOVE IDENTIFIER = 0
 			try {
-				response = query.sendHttpHeadRequest(url);
+				response = query.sendHttpHeadRequestV2(url);
 				
 				String len = "";
 				try {

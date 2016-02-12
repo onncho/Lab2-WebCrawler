@@ -38,6 +38,89 @@ public class HTTPQuery {
 		return null;
 	}
 
+	
+	
+	
+	
+	///////V2
+	
+	public String[] sendHttpRequestV2(String target, String requestType) throws IOException, UnknownHostException{
+		String res[] = new String[2];
+		String response = "";
+		boolean fetchContent = requestType.equals("GET");
+		try {
+			if(!target.startsWith("http")){
+				target = "http://" + target;
+			}
+			URI uri = new URI(target);
+
+			String host = uri.getHost();
+			String path = uri.getPath();
+			path = path.equals("") ? "/" : path;
+
+			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
+			String headers = "Host: " + host;
+
+
+			
+
+			Socket socket = new Socket(InetAddress.getByName(host), 80);
+			socket.setSoTimeout(7000);
+			PrintWriter writer = new PrintWriter(socket.getOutputStream());
+
+			writer.write(requestLine);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			writer.write(headers);
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			writer.write(_CRLF.toCharArray());
+			writer.flush();
+
+			if(!fetchContent){
+				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				String currentRecievedLine = reader.readLine();
+				while(currentRecievedLine != null && !currentRecievedLine.equals("")){
+					response += currentRecievedLine + "\n";
+					currentRecievedLine = reader.readLine();
+				}
+				
+				System.out.println(response);
+
+				res[0] = response;
+				res[1] = "";
+
+				reader.close();
+
+			} else {
+				res = readHttpResponse(socket);
+			}
+			writer.close();
+			socket.close();
+
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			throw new UnknownHostException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			//throw new IOException();
+
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return res;
+	}
+	
+	
+	
+	/////////V2
+	
+	
+	
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
@@ -224,6 +307,10 @@ public class HTTPQuery {
 	 */
 	public String sendHttpHeadRequest(String target) throws IOException, UnknownHostException{
 		return (sendHttpRequest(target, "HEAD"))[0];
+	}
+	
+	public String sendHttpHeadRequestV2(String target) throws IOException, UnknownHostException{
+		return (sendHttpRequestV2(target, "HEAD"))[0];
 	}
 
 	/**
