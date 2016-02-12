@@ -132,6 +132,7 @@ public class AnalyzerTask implements Runnable {
 
 	private int populateCorrectList(String linkToMap){
 		String ext = getExtensionFromString(linkToMap);
+		linkToMap = attachAbsoluteUrlToLink(linkToMap);
 		int i = ext != null ? 0 : 3;//doesn't have an extension, mapping to anchors list stright away
 		while(i < 4) {
 			if(i == 0){
@@ -162,7 +163,70 @@ public class AnalyzerTask implements Runnable {
 		return i;
 	}
 
+	
+	
+	
+	/**
+	 * 
+	 * ASSUMING THIS METHOD WILL BE CALLED ONLY !!WITH!! attachAbsoluteUrlToLink() output as input
+	 */
+	private boolean isUrlInternal(String href){
+		System.out.println("check if this -> " + href + " is internal");
+		
+		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
+			//external so false for internal
+			System.out.println("href -> " + href + " was found as external :(");
+			return false;
+		} 
+		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
+			//internal with http , https with or without www
+			System.out.println("href -> " + href + " was found as internal :)");
+			return true;
+		} 
+		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
+			//internal
+			System.out.println("href -> " + href + " was found as internal :)");
+			return true;
+		}
+		System.out.println("href -> " + href + " was found as external :(");
+		return false;
+	}
+	
+	
 
+	private String attachAbsoluteUrlToLink(String href){
+		if(href == null) {return null;}
+		String absoluteURL = "";
+		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
+		int indexOfSolamitInLink = href.indexOf("#");
+		System.out.println("202 :: href passed --> " + href + " from pageAddress -> " + m_pageAddress);
+		if(indexOfSolamitInLink == 0){
+			//throw to garbage like this job fuk it
+			return null;
+		}
+		else if(indexOfSolamitInLink > 0){
+			href = href.substring(0, indexOfSolamitInLink);
+		}
+		
+		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
+			//external
+			absoluteURL = href;
+		} 
+		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
+			//internal with http , https with or without www
+			absoluteURL = href;
+		} 
+		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
+			//internal
+			if(!href.startsWith("/")){
+				href = "/" + href;
+			}
+			absoluteURL = m_uri.getHost() + href;
+		}
+		return absoluteURL;
+	}
+	
+	
 	
 	// internal "/path../../somePage.html" , "path../../somePage.html", http://thisDomain/path/somePage.html, www.thisDomain
 	//
@@ -240,26 +304,21 @@ public class AnalyzerTask implements Runnable {
 	 */
 	private boolean populateAnchors(String link){
 
-		String formattedLink = reformatAnchorLink(link);
-		URI linkURI;
+		String formattedLink = attachAbsoluteUrlToLink(link);//reformatAnchorLink(link);
+		
 		boolean inserted = false;
 		if (formattedLink != null) {
-			try {
-				
-				if(formattedLink.indexOf("http:///") == 0){
-					formattedLink = formattedLink.substring(0, 7);
-					
-				}
-				linkURI = new URI(formattedLink);
-				if(linkURI.getHost().equals(m_uri.getHost())){
+			
+				//linkURI = new URI(formattedLink);
+				boolean isInternal = isUrlInternal(formattedLink);
+				//if(linkURI.getHost().equals(m_uri.getHost())){
+				if(isInternal){
 					//m_internalAnchors.push(formattedLink);
 					inserted = pushIfNotExists(m_internalAnchors, formattedLink);
 				} else {
 					inserted = pushIfNotExists(m_externalAnchors, formattedLink);
 				}
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}			
+						
 		}
 
 		return inserted;
@@ -279,6 +338,7 @@ public class AnalyzerTask implements Runnable {
 		}
 		return !exists;
 	}
+
 
 	private String getExtensionFromString(String linkToMap) {
 		String ext = null;
