@@ -40,13 +40,16 @@ public class HTTPQuery {
 		String response = "";
 		boolean fetchContent = requestType.equals("GET");
 		try {
+			if(!target.startsWith("http")){
+				target = "http://" + target;
+			}
 			URL uri = new URL(target);
 			
 			String host = uri.getHost();
 			String path = uri.getPath();
 			path = path.equals("") ? "/" : path;
 			
-			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
+			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
 			String headers = "Host: " + host;
 			
 			

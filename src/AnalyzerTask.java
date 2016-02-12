@@ -31,6 +31,7 @@ public class AnalyzerTask implements Runnable {
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
 		//m_DownloaderThreadPool = i_threadPool;
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
+		m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", "");
 		m_pageAddress = i_pageAddress;
 		m_sizeAndTypeOfPage = 0;
 		query = new HTTPQuery();
@@ -61,6 +62,12 @@ public class AnalyzerTask implements Runnable {
 
 		try {
 			fetchResourcesFounedAndAddToReport();
+			for(int i = 0; i < m_internalAnchors.size(); i++){
+				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
+				
+				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
+				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,21 +77,16 @@ public class AnalyzerTask implements Runnable {
 		}
 
 		// send all internal link to downloader queue
-		LinkedList<String> internalLinksToDownload = getInternalAnchors();
+		//LinkedList<String> internalLinksToDownload = getInternalAnchors();
 		
-		for(int i = 0; i < internalLinksToDownload.size(); i++){
-			System.out.println(String.format("Sending to downloader: %S", internalLinksToDownload.get(i)));
-			
-			DownloaderTask downloader = new DownloaderTask(internalLinksToDownload.get(i));
-			CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
-		}
+		
 
 		//m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
 	}
 
-	private LinkedList<String> getInternalAnchors() {
+	/*private LinkedList<String> getInternalAnchors() {
 		return m_internalAnchors;
-	}
+	}*/
 
 	private void lookForImagesAndPopulate(){
 		getAllPropertiesValueByTagAndPopulateLists("<img", "src=");
@@ -175,20 +177,20 @@ public class AnalyzerTask implements Runnable {
 		
 		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
 			//external so false for internal
-			System.out.println("href -> " + href + " was found as external :(");
+			System.out.println("href -> " + href + " was found as external :( -1");
 			return false;
 		} 
 		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
 			//internal with http , https with or without www
-			System.out.println("href -> " + href + " was found as internal :)");
+			System.out.println("href -> " + href + " was found as internal :) 0 ");
 			return true;
 		} 
 		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
 			//internal
-			System.out.println("href -> " + href + " was found as internal :)");
+			System.out.println("href -> " + href + " was found as internal :) 1");
 			return true;
 		}
-		System.out.println("href -> " + href + " was found as external :(");
+		System.out.println("href -> " + href + " was found as external :( -2");
 		return false;
 	}
 	
