@@ -123,8 +123,8 @@ public class ReportPerDomain {
 	}
 	public String getFileNamesOfConnectedDomains(){
 		String tableCol = "";
-		for (LinkedList<String> string : m_ConnectedDomains) {
-			tableCol 
+		for (String reportName : m_ConnectedDomains) {
+			tableCol += str 
 		}
 	}
 

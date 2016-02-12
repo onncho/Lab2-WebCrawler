@@ -82,9 +82,48 @@ public class CrawlerControler {
 			BufferedReader reader = new BufferedReader(new FileReader(fileToOpen));
 			String lineFromReader;
 			while((lineFromReader = reader.readLine()) != null){
+				//String realValueOfLine = "";
+				switch(lineFromReader){
+				case "#_ROBOTS_#":
+					htmlTemplate += report.isDisrespectRobot;
+					break;
+				case "#_AMOUNT$IMAGES_#":
+					htmlTemplate += report.getNumOfImages();
+					break;
+				case "#_SIZE$IMAGES_#":
+					htmlTemplate += report.getSizeOfImages();
+					break;
+				case "#_AMOUNT$VIDEOS_#":
+					htmlTemplate += report.getNumOfVideos();
+					break;
+				case "#_SIZE$VIDEOS_#":
+					htmlTemplate += report.getSizeOfVideos();
+					break;
+				case "#_AMOUNT$DOCUMENTS_#":
+					htmlTemplate += report.getNumOfDocuments();
+					break;
+				case "#_SIZE$DOCUMENTS_#":
+					htmlTemplate += report.getSizeOfDocuments();
+					break;
+				case "#_AMOUNT$PAGES_#":
+					htmlTemplate += report.getNumOfOverallPages();
+					break;
+				case "#_SIZE$PAGES_#":
+					htmlTemplate += report.getSizeOfOverAllPages();
+					break;
+				case "#_AMOUNT$INTERNAL_#":
+					htmlTemplate += report.getNumOfInternalPages();
+					break;
+				case "#_AMOUNT$EXTERNAL_#":
+					htmlTemplate += report.getNumOfExternalPages();
+					break;
+				case "#_AMOUNT$DOM$CONNECTED_#":
+					htmlTemplate += report.getFileNamesOfConnectedDomains();
+					
+				}
 				htmlTemplate += lineFromReader;
 			}
-		} catch (FileNotFoundException | IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
