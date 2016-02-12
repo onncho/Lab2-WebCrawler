@@ -406,6 +406,7 @@ public class AnalyzerTask implements Runnable {
 			String response = "";
 			
 			// TODO: check what's happens when response with exception
+			// TODO: CHECK COMMENT ABOVE IDENTIFIER = 0
 			try {
 				response = query.sendHttpHeadRequest(url);
 				
@@ -417,6 +418,8 @@ public class AnalyzerTask implements Runnable {
 					len = query.getContentLengthFromResponse(response);
 				}
 				
+				// TODO: Some HEAD request don't provide Content-Length to their response
+				// Solution A: send GET request only for the Response String, B: ignore this.
 				// image
 				if (identifier == 0) {
 					CrawlerControler.getInstance().addNumOfImages();
