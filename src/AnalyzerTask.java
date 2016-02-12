@@ -413,8 +413,7 @@ public class AnalyzerTask implements Runnable {
 				try {
 					len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
 				} catch (ArrayIndexOutOfBoundsException error) {
-					response = query.sendHttpHeadRequest(url);
-					len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
+					error.printStackTrace();
 				}
 				
 				// image
