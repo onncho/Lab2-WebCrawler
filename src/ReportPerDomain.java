@@ -58,16 +58,20 @@ public class ReportPerDomain {
 		return m_SizeOfImages;
 	}
 	
-	public int getNumtOfInternalPages(){
+	public int getNumOfInternalPages(){
 		return m_NumInternalLinks;
 	}
-	public int getSizeOfInternalPages(){
-		return m_
+	public int getNumOfExternalPages(){
+		return m_NumExternalLinks;
 	}
 	
-	public int getAmountOfExternalPages(){}
-	public int getSizeOfExternalPages(){}
+	public int getNumOfOverallPages(){
+		return m_NumExternalLinks + m_NumInternalLinks;
+	}
 	
+	public int getSizeOfOverAllPages(){
+		return m_SizeOfPages;
+	}
 	
 	
 	public synchronized void addNumOfDocs() {
@@ -110,6 +114,19 @@ public class ReportPerDomain {
 		m_NumExternalLinks++;
 	}
 
+	
+	
+	//TODO: implement and maintain
+	
+	public int getNumOfConnectedDomains(){
+		return m_ConnectedDomains.size();
+	}
+	public String getFileNamesOfConnectedDomains(){
+		String tableCol = "";
+		for (LinkedList<String> string : m_ConnectedDomains) {
+			tableCol 
+		}
+	}
 
 
 }
