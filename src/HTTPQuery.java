@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -44,7 +46,7 @@ public class HTTPQuery {
 			if(!target.startsWith("http")){
 				target = "http://" + target;
 			}
-			URL uri = new URL(target);
+			URI uri = new URI(target);
 
 			String host = uri.getHost();
 			String path = uri.getPath();
@@ -97,6 +99,9 @@ public class HTTPQuery {
 			e.printStackTrace();
 			//throw new IOException();
 
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return res;
