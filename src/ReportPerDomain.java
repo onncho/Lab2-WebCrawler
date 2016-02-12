@@ -1,3 +1,4 @@
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 
 public class ReportPerDomain {
@@ -36,6 +37,16 @@ public class ReportPerDomain {
 		m_SizeOfVideos = 0;
 		m_NumInternalLinks = 0;
 		m_NumExternalLinks = 0;
+	}
+	
+	//TODO: Debug
+	public void Print() throws IllegalArgumentException, IllegalAccessException {
+		for (Field field : this.getClass().getDeclaredFields()) {
+		    field.setAccessible(true);
+		    String name = field.getName();
+		    Object value = field.get(this);
+		    System.out.printf("Field name: %s, Field value: %s%n", name, value);
+		}
 	}
 	
 	public int getNumOfDocuments(){

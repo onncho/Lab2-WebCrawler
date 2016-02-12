@@ -33,6 +33,10 @@ public class CrawlerControler {
 		m_AnalyzerPool.putTaskInAnalyzerQueue(task);
 	}
 	
+	public void print() throws IllegalArgumentException, IllegalAccessException {
+		m_ReportPerDomain.Print();
+	}
+	
 	// All Method need to be accessed
 	public void addNumOfDocs() {
 		m_ReportPerDomain.addNumOfDocs();

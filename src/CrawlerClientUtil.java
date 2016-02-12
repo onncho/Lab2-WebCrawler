@@ -11,9 +11,6 @@ public class CrawlerClientUtil {
 	String crawlerTakenByDomain;
 	HashMap<String,String> linksToPastReports;
 	
-	
-	
-	
 	public CrawlerClientUtil(){
 		isCrawlerTaken = false;
 		crawlerTakenByDomain = null;

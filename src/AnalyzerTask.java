@@ -61,7 +61,9 @@ public class AnalyzerTask implements Runnable {
 		lookForImagesAndPopulate();
 
 		try {
-			fetchResourcesFounedAndAddToReport();
+			
+			// add to Report
+			addToDomainReport();
 			for(int i = 0; i < m_internalAnchors.size(); i++){
 				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
 				
@@ -167,8 +169,6 @@ public class AnalyzerTask implements Runnable {
 	}
 
 	
-	
-	
 	/**
 	 * 
 	 * ASSUMING THIS METHOD WILL BE CALLED ONLY !!WITH!! attachAbsoluteUrlToLink() output as input
@@ -195,8 +195,6 @@ public class AnalyzerTask implements Runnable {
 		return false;
 	}
 	
-	
-
 	private String attachAbsoluteUrlToLink(String href){
 		if(href == null) {return null;}
 		String absoluteURL = "";
@@ -368,7 +366,7 @@ public class AnalyzerTask implements Runnable {
 	}
 
 	// 
-	private void fetchResourcesFounedAndAddToReport() throws IOException, Exception {
+	private void addToDomainReport() throws IOException, Exception {
 
 		fetchAllFromList(m_images, 0);
 		fetchAllFromList(m_videos, 1);

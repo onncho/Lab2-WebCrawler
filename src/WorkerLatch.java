@@ -20,6 +20,15 @@ public class WorkerLatch {
 	public void finish() {
 		//TODO - STOP ALL THREADS RUNNING
 		System.out.println("Crawling needs to finish");
+		try {
+			CrawlerControler.getInstance().print();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public synchronized void up() {
