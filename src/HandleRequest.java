@@ -19,6 +19,8 @@ public class HandleRequest implements Runnable {
 	int m_contentLength;
 	char[] m_MsgBodyCharBuffer;
 	StringBuilder m_MessageBodyBuilder;
+	
+	CrawlerClientUtil crawlerUtil = new CrawlerClientUtil();
 
 	private final String ContentLengthHeader = "Content-Length: ";
 
@@ -135,6 +137,10 @@ public class HandleRequest implements Runnable {
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
 		
 		if(!checkForCrawler(req)){
+			
+			if(req.m_RequestedPage.equals("getCrawlerReport.html")){
+				crawlerUtil.
+			}
 			// user did not asked for crawler or requested domain coudln't be found under params, there for going 
 			// normal process
 			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
@@ -154,7 +160,6 @@ public class HandleRequest implements Runnable {
 			return false;
 		}
 		return true;
-		
 	}
 
 	private HTTPResponse crawlerFlow(HTTPRequest req){
@@ -164,14 +169,14 @@ public class HandleRequest implements Runnable {
 
 
 		String domainToCrawl = copyOfParams.get("domainToCrawl");
-		boolean checkForPorts = checkForPortsParamExists ? copyOfParams.get("PortScanChecked") == "Checked" : false;
-		boolean respectRobotsTxt = respectRobotsTxtExists ? copyOfParams.get("RobotsChecked") == "Checked" : false;
+		boolean checkForPorts = checkForPortsParamExists ? copyOfParams.get("PortScanChecked").equals("Checked") : false;
+		boolean respectRobotsTxt = respectRobotsTxtExists ? copyOfParams.get("RobotsChecked").equals("Checked") : false;
 		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt);
 
 	}
 	
 	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt) {
-		// TODO Auto-generated method stub
+		// TODO init crawler
 		return null;
 	}
 
