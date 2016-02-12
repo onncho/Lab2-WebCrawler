@@ -12,7 +12,12 @@ public class HTTPQuery {
 	
 	final String _CRLF = "\r\n";
 	
-	/*private String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
+	
+	private String readChunksFromBufferedReader(BufferedReader reader){
+		
+	}
+	
+	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
 		boolean fetchContent = requestType.equals("GET");
@@ -31,9 +36,7 @@ public class HTTPQuery {
 			
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			if(!fetchContent){
-				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+			
 				writer.write(requestLine);
 				writer.write(_CRLF.toCharArray());
 				writer.flush();
@@ -44,19 +47,21 @@ public class HTTPQuery {
 
 				writer.write(_CRLF.toCharArray());
 				writer.flush();
+				if(!fetchContent){
+					BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-				while((currentRecievedLine = reader.readLine()) != null){
-					response += currentRecievedLine + "\n";
-				}
-				System.out.println(response);
+					while((currentRecievedLine = reader.readLine()) != null){
+						response += currentRecievedLine + "\n";
+					}
+					System.out.println(response);
 
-				res[0] = response;
-				res[1] = "";
-				
-				reader.close();
-				
+					res[0] = response;
+					res[1] = "";
+
+					reader.close();
+
 			} else {
-				res = readHttpResponse(socket.getInputStream());
+				res = readHttpResponse(socket);
 			}
 			writer.close();
 			socket.close();
@@ -69,115 +74,14 @@ public class HTTPQuery {
 			throw new IOException();
 		}
 		return res;
-	}*/
-	
-	
-	public String[] sendHttpRequest(String target, String requestType) {
-		String response[] = null;
-		try {
-			URL uri = new URL(target);
-
-			String host = uri.getHost();
-			String path = uri.getPath();
-			path = path == "" ? "/" : path;
-
-			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
-			String headers = "Host: " + host;
-			
-			//System.out.println("REQUEST-->\n" + requestLine + "\n" + headers );
-
-			//char currentRecievedChar;
-
-			Socket socket = new Socket(InetAddress.getByName(host), 80);
-			PrintWriter writer = new PrintWriter(socket.getOutputStream());
-			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			writer.write(requestLine);
-			writer.write(_CRLF.toCharArray());
-			writer.flush();
-
-			writer.write(headers);
-			writer.write(_CRLF.toCharArray());
-			writer.flush();
-
-			writer.write(_CRLF.toCharArray());
-			writer.flush();
-
-			/*while ((currentRecievedChar = (char) reader.read()) != -1) {
-				response += currentRecievedChar;
-			}*/
-			response = readHttpResponse(socket);
-			//System.out.println(response);
-
-			
-			writer.close();
-			socket.close();
-
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return response;
 	}
-	
-	
-	
-	/*//TODO: check if we can make it to one method instead of 2
-	public String[] readHttpResponse(InputStream connection) throws IOException{
+	//TODO: check if we can make it to one method instead of 2
+	public String[] readHttpResponse(Socket connection) throws IOException{
 		String ContentLengthHeader = "Content-Length: ";
 		int contentLength = -1;
 		String m_FullRequest = "";
 		char[] m_MsgBodyCharBuffer;
 		StringBuilder m_MessageBodyBuilder;
-		String m_messageBodyString = "";
-		
-		try {
-			//if (connection.isClosed()) {
-			//	return null;
-			//}
-			BufferedReader reader = new BufferedReader(new InputStreamReader(connection));
-			String line = reader.readLine();
-
-			// Read Request According to Http Protocol
-			while (line != null && !line.equals("")) {
-				// Check For Request With A Body Message
-				if (line.indexOf(ContentLengthHeader) > -1) {
-					String bodyContentLengthAsString = line.substring(ContentLengthHeader.length());
-					contentLength = Integer.parseInt(bodyContentLengthAsString);
-				}
-				m_FullRequest += (line + "\n");
-				line = reader.readLine();
-			}
-
-			// Handle With Request that Contain Body Message
-			if (contentLength > 0) {
-				m_MsgBodyCharBuffer = new char[contentLength];
-				reader.read(m_MsgBodyCharBuffer);
-				m_MessageBodyBuilder = new StringBuilder();
-
-				for (int i = 0; i < m_MsgBodyCharBuffer.length; i++) {
-					m_MessageBodyBuilder.append(m_MsgBodyCharBuffer[i]);
-				}
-				m_messageBodyString = m_MessageBodyBuilder.toString();
-			}
-			
-			reader.close();
-
-		} catch (IOException e) {
-			System.err.println("ERROR: IO Exception");
-			throw new IOException();
-		}
-		
-		return new String[]{m_FullRequest, m_messageBodyString};
-	}*/
-	
-	public String[] readHttpResponse(Socket connection) {
-		String ContentLengthHeader = "Content-Length: ";
-		int contentLength = -1;
-		String m_FullRequest = "";
-		char[] m_MsgBodyCharBuffer;
-		StringBuilder m_MessageBodyBuilder = new StringBuilder("");
 		String m_messageBodyString = "";
 		
 		try {
@@ -209,21 +113,47 @@ public class HTTPQuery {
 				}
 				m_messageBodyString = m_MessageBodyBuilder.toString();
 			}
-
-			// TRACE: Request Headers
-			//System.out.println(m_FullRequest);
 			
 			reader.close();
 
 		} catch (IOException e) {
 			System.err.println("ERROR: IO Exception");
+			throw new IOException();
 		}
-		System.out.println(m_FullRequest);
-		//System.out.println("---");
-		//System.out.println(m_messageBodyString);
-		//System.out.println("qq---qq--");
+		
 		return new String[]{m_FullRequest, m_messageBodyString};
 	}
+	
+	
+	
+	
+	private String chunkedDataToString(BufferedReader in) {
+		StringBuilder result;
+		try {
+		result = new StringBuilder();
+		String size = in.readLine();
+		int chunkSize = Integer.parseInt(size, 16);
+		while (chunkSize != 0) {
+		long bytesNum = 0;
+		   while (bytesNum < chunkSize) {
+		result.append((char) in.read());
+		bytesNum++;
+		}
+		in.readLine();
+		chunkSize = Integer.parseInt(in.readLine(), 16);
+		}
+		return result.toString();
+		} catch (NumberFormatException e) {
+		  System.out.println("Something went wrong when getting the chunk size.");
+		e.printStackTrace();
+		} catch (IOException e) {
+		  System.out.println("Something went wrong when reading the chunked response.");
+		e.printStackTrace();
+		}
+		 return null;
+		}
+	
+	
 	
 	
 	
