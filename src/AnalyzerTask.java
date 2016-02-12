@@ -1,9 +1,11 @@
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 public class AnalyzerTask implements Runnable {
-	
+
 	//TODO: why linkedList?
 	LinkedList<String> m_externalAnchors;
 	LinkedList<String> m_internalAnchors;
@@ -59,7 +61,7 @@ public class AnalyzerTask implements Runnable {
 		lookForImagesAndPopulate();
 
 		fetchResourcesFounedAndAddToReport();
-		
+
 		// send all internal link to downloader queue
 		LinkedList<String> internalLinksToDownload = getInternalAnchors();
 		for(int i = 0; i < internalLinksToDownload.size(); i++){
@@ -67,7 +69,7 @@ public class AnalyzerTask implements Runnable {
 			Downloader downloader = new Downloader(m_DownloaderThreadPool, internalLinksToDownload.get(i));
 			m_DownloaderThreadPool.putTaskInDownloaderQueue((Runnable) downloader);
 		}
-		
+
 		m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
 	}
 
@@ -142,7 +144,7 @@ public class AnalyzerTask implements Runnable {
 				}
 			}
 			else {
-				
+
 				populateAnchors(linkToMap);
 				break;
 			}
@@ -155,11 +157,11 @@ public class AnalyzerTask implements Runnable {
 	private String reformatAnchorLink(String link){
 		String linkLowered = link.toLowerCase();
 		String verifiedLink;
-		
+
 		if (link.charAt(link.length() - 1) == '#') {			
 			return null; 
 		}
-		
+
 		// check if the link is internal
 		if(linkLowered.indexOf("/") == 0) {
 			verifiedLink = "http://" + m_uri.getPath() + link.toLowerCase();
@@ -208,7 +210,7 @@ public class AnalyzerTask implements Runnable {
 	 * @return true if member was added , false otherwise
 	 */
 	private boolean pushIfNotExists(LinkedList<String> set, String member){
-		
+
 		boolean exists = listContainsElement(set, member);
 		if(!exists){
 			set.push(member);
@@ -239,18 +241,15 @@ public class AnalyzerTask implements Runnable {
 	private String removeQuoteCharFromString(String str){
 		return str.substring(1, str.length());
 	}
-	
-	
-	
-	
-	/*
-	// after mapping to external \ internal links
-	private void fetchResourcesFounedAndAddToReport(){
+
+	// 
+	private void fetchResourcesFounedAndAddToReport() {
+
 		fetchAllFromList(m_images, 0);
 		fetchAllFromList(m_videos, 1);
 		fetchAllFromList(m_docs, 2);
 		fetchAllFromList(m_externalAnchors, 3);
-		fetchFromInternalLinks();
+		//fetchFromInternalLinks();
 
 	}
 
@@ -262,49 +261,79 @@ public class AnalyzerTask implements Runnable {
 			//m_report.addInternalPageLink(link);
 		}
 	}
-*/
+
 	/**
 	 * @TODO pages in links, are going to be downloaded anyway and will have own reports
 	 * @param list to pop link from
 	 * @param listIdentifier - 0 image , 1 videos , 2 documents, 3 external pages
 	 */
 	private void fetchAllFromList(LinkedList<String> list, int listIdentifier) {
+
 		for(int i = 0; i < list.size(); i++){
 			String address = list.get(i);
-			String extension = getExtensionFromString(address);
-
 			
-			if(address != null && extension != null){
-				Link link = createLink(address, extension);
+			//String extension = getExtensionFromString(address);
 
-				if(link != null){
-					if(i == 0){
-						m_report.addImageLink(link);
-					}
-					else if(i == 1){
-						m_report.addVideoLink(link);
-					}
-					else if(i == 2){
-						m_report.addDocumentLink(link);
-					}
-					else if(i == 3){
-						m_report.addExternalPageLink(link);
-					}
-				
-				
-				} else {
-					System.out.println("failed on fetching image -> link = " + address);
-				}
-
-			} else {
-				System.out.println("fetching an image failed on getting address or extension on index = " + i);
+			if(listIdentifier == 0){
+				// try insert to db ? 
+				// send req
+				// fill report
+				tryInsertToDB(address, listIdentifier);
+			}
+			else if(listIdentifier == 1){
+				m_report.addVideoLink(link);
+			}
+			else if(i == 2){
+				m_report.addDocumentLink(link);
+			}
+			else if(i == 3){
+				m_report.addExternalPageLink(link);
 			}
 
-		}
-	}
-	
 
-	/*
+		} 
+		//System.out.println("failed on fetching image -> link = " + address);
+
+
+
+		//System.out.println("fetching an image failed on getting address or extension on index = " + i);
+
+	}
+
+	private void tryInsertToDB(String url, int identifier) throws Exception, IOException {
+		
+		if (!CrawlerDB.getInstance().linkExist(url)) {
+			CrawlerDB.getInstance().addDownloadLink(url);
+			String response = query.sendHttpHeadRequest(url);
+			String len = query.parseContentLengthFromHttpResponse(response).split("#_#@#_#")[1];
+			
+			// image
+			if (identifier == 0) {
+				CrawlerControler.getInstance().addNumOfImages();
+				CrawlerControler.getInstance().sumSizeOfImages(Integer.parseInt(len));
+			} 
+			//video 
+			else if (identifier == 1) {
+				CrawlerControler.getInstance().addNumOfVideos();
+				CrawlerControler.getInstance().sumSizeOfVideos(Integer.parseInt(len));
+			}
+			//doc
+			else if (identifier == 2) {
+				CrawlerControler.getInstance().addNumOfDocs();
+				CrawlerControler.getInstance().sumSizeOfDocs(Integer.parseInt(len));
+			}
+			// external link
+			else if (identifier == 3) {
+				CrawlerControler.getInstance().addNumOfExternalLinks();
+			}
+			
+		}
+		
+	}
+
+
+
+/*
 	private Link createLink(String linkAddress, String extension){
 		Link link = null;
 		try {
@@ -326,17 +355,17 @@ public class AnalyzerTask implements Runnable {
 
 		return link;
 	}
-	*/
+ */
 
 
-	/*
+/*
 	private LinkReport createReport(){
 		String size = m_sizeAndTypeOfPage.split("#_#@#_#")[1];
 		int sizeInBytes = Integer.parseInt(size);
 		LinkReport report = new LinkReport(m_pageAddress, sizeInBytes);
 		return report;
 	}
-	*/
+ */
 
 
 }

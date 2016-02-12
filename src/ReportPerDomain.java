@@ -41,6 +41,42 @@ public class ReportPerDomain {
 	public synchronized void addNumOfDocs() {
 		m_NumOfDocuments++;
 	}
+	
+	public synchronized void sumSizeOfDocs(int i_docsSize) {
+		m_SizeOfDocuments += i_docsSize;
+	}
+	
+	public synchronized void addNumOfPages() {
+		m_NumOfPages++;
+	}
+	
+	public synchronized void sumSizeOfPages(int i_pagesSize) {
+		m_SizeOfPages += i_pagesSize;
+	}
+	
+	public synchronized void addNumOfImages() {
+		m_NumOfImages++;
+	}
+	
+	public synchronized void sumSizeOfImages(int i_imagesSize) {
+		m_SizeOfImages += i_imagesSize;
+	}
+	
+	public synchronized void addNumOfVideos() {
+		m_NumOfVideos++;
+	}
+	
+	public synchronized void sumSizeOfVideos(int i_videoSize) {
+		m_SizeOfVideos += i_videoSize;
+	}
+	
+	public synchronized void addNumOfInternalLinks() {
+		m_NumInternalLinks++;
+	}
+	
+	public synchronized void addNumOfExternalLinks() {
+		m_NumExternalLinks++;
+	}
 
 
 
