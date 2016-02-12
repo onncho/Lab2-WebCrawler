@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -14,8 +13,31 @@ public class HTTPQuery {
 	
 	
 	private String readChunksFromBufferedReader(BufferedReader reader){
-		
+		String chunkSizeAsString;
+		String messageBody = "";
+		try {
+			chunkSizeAsString = reader.readLine();
+			int currentChunk = Integer.parseInt(chunkSizeAsString, 16);
+			
+			while(currentChunk != 0){
+				long index = 0;
+				while(index < currentChunk){
+					messageBody += (char) reader.read();
+					index += 1;
+				}
+				reader.readLine();//CRLF char so skipping
+				currentChunk = Integer.parseInt(reader.readLine(), 16);
+			}
+			return messageBody;
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		return null;
 	}
+	
+	
+	
 	
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
@@ -101,9 +123,10 @@ public class HTTPQuery {
 				m_FullRequest += (line + "\n");
 				line = reader.readLine();
 			}
-
+			
+			boolean isChunked = m_FullRequest.indexOf("Transfer-Encoding: Chunked") > -1;
 			// Handle With Request that Contain Body Message
-			if (contentLength > 0) {
+			if (contentLength > 0 && !isChunked) {
 				m_MsgBodyCharBuffer = new char[contentLength];
 				reader.read(m_MsgBodyCharBuffer);
 				m_MessageBodyBuilder = new StringBuilder();
@@ -113,7 +136,9 @@ public class HTTPQuery {
 				}
 				m_messageBodyString = m_MessageBodyBuilder.toString();
 			}
-			
+			else if(isChunked){
+				m_messageBodyString = readChunksFromBufferedReader(reader);
+			}
 			reader.close();
 
 		} catch (IOException e) {
@@ -127,31 +152,6 @@ public class HTTPQuery {
 	
 	
 	
-	private String chunkedDataToString(BufferedReader in) {
-		StringBuilder result;
-		try {
-		result = new StringBuilder();
-		String size = in.readLine();
-		int chunkSize = Integer.parseInt(size, 16);
-		while (chunkSize != 0) {
-		long bytesNum = 0;
-		   while (bytesNum < chunkSize) {
-		result.append((char) in.read());
-		bytesNum++;
-		}
-		in.readLine();
-		chunkSize = Integer.parseInt(in.readLine(), 16);
-		}
-		return result.toString();
-		} catch (NumberFormatException e) {
-		  System.out.println("Something went wrong when getting the chunk size.");
-		e.printStackTrace();
-		} catch (IOException e) {
-		  System.out.println("Something went wrong when reading the chunked response.");
-		e.printStackTrace();
-		}
-		 return null;
-		}
 	
 	
 	
