@@ -27,7 +27,7 @@ public class WebServer {
 		
 
 		CrawlerControler.getInstance();
-		DownloaderTask task = new DownloaderTask("http://www.durexusa.com");
+		DownloaderTask task = new DownloaderTask("http://smallbasic.com");
 		CrawlerControler.getInstance().addTaskToDownloaderQueue(task);
 		
 	}

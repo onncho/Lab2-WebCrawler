@@ -57,7 +57,7 @@ public class HTTPQuery {
 			String currentRecievedLine = "";
 			
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
-			socket.setSoTimeout(6000);
+			socket.setSoTimeout(7000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			
 				writer.write(requestLine);

@@ -19,7 +19,7 @@ public class CrawlerControler {
 	private CrawlerControler() {
 		
 		// TODO: get domain get from config.ini
-		m_ReportPerDomain = new ReportPerDomain("http://www.durexusa.com");
+		m_ReportPerDomain = new ReportPerDomain("http://smallbasic.com");
 		m_DownloaderPool = new DownloaderThreadPool(2);
 		m_AnalyzerPool = new AnalyzerThreadPool(1);
 	}
