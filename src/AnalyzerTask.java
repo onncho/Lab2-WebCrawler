@@ -422,12 +422,12 @@ public class AnalyzerTask implements Runnable {
 					CrawlerControler.getInstance().addNumOfImages();
 					CrawlerControler.getInstance().sumSizeOfImages(Integer.parseInt(len));
 				} 
-				//video 
+				// video 
 				else if (identifier == 1) {
 					CrawlerControler.getInstance().addNumOfVideos();
 					CrawlerControler.getInstance().sumSizeOfVideos(Integer.parseInt(len));
 				}
-				//doc
+				// doc
 				else if (identifier == 2) {
 					CrawlerControler.getInstance().addNumOfDocs();
 					CrawlerControler.getInstance().sumSizeOfDocs(Integer.parseInt(len));
