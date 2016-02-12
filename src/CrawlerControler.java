@@ -83,7 +83,8 @@ public class CrawlerControler {
 		m_ReportPerDomain.addPorts(ports);
 	}
 	
-	public void saveReport(ReportPerDomain report){
+	public void saveReport(){
+		
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
 		String htmlTemplate = "";
@@ -94,40 +95,40 @@ public class CrawlerControler {
 				//String realValueOfLine = "";
 				switch(lineFromReader){
 				case "#_ROBOTS_#":
-					htmlTemplate += report.isDisrespectRobot;
+					htmlTemplate += m_ReportPerDomain.isDisrespectRobot;
 					break;
 				case "#_AMOUNT$IMAGES_#":
-					htmlTemplate += report.getNumOfImages();
+					htmlTemplate += m_ReportPerDomain.getNumOfImages();
 					break;
 				case "#_SIZE$IMAGES_#":
-					htmlTemplate += report.getSizeOfImages();
+					htmlTemplate += m_ReportPerDomain.getSizeOfImages();
 					break;
 				case "#_AMOUNT$VIDEOS_#":
-					htmlTemplate += report.getNumOfVideos();
+					htmlTemplate += m_ReportPerDomain.getNumOfVideos();
 					break;
 				case "#_SIZE$VIDEOS_#":
-					htmlTemplate += report.getSizeOfVideos();
+					htmlTemplate += m_ReportPerDomain.getSizeOfVideos();
 					break;
 				case "#_AMOUNT$DOCUMENTS_#":
-					htmlTemplate += report.getNumOfDocuments();
+					htmlTemplate += m_ReportPerDomain.getNumOfDocuments();
 					break;
 				case "#_SIZE$DOCUMENTS_#":
-					htmlTemplate += report.getSizeOfDocuments();
+					htmlTemplate += m_ReportPerDomain.getSizeOfDocuments();
 					break;
 				case "#_AMOUNT$PAGES_#":
-					htmlTemplate += report.getNumOfOverallPages();
+					htmlTemplate += m_ReportPerDomain.getNumOfOverallPages();
 					break;
 				case "#_SIZE$PAGES_#":
-					htmlTemplate += report.getSizeOfOverAllPages();
+					htmlTemplate += m_ReportPerDomain.getSizeOfOverAllPages();
 					break;
 				case "#_AMOUNT$INTERNAL_#":
-					htmlTemplate += report.getNumOfInternalPages();
+					htmlTemplate += m_ReportPerDomain.getNumOfInternalPages();
 					break;
 				case "#_AMOUNT$EXTERNAL_#":
-					htmlTemplate += report.getNumOfExternalPages();
+					htmlTemplate += m_ReportPerDomain.getNumOfExternalPages();
 					break;
 				case "#_AMOUNT$DOM$CONNECTED_#":
-					htmlTemplate += report.getFileNamesOfConnectedDomains();
+					htmlTemplate += m_ReportPerDomain.getFileNamesOfConnectedDomains();
 					
 				}
 				htmlTemplate += lineFromReader;
