@@ -81,13 +81,10 @@ public class HTTPQuery {
 					currentRecievedLine = reader.readLine();
 				}
 
-				//System.out.println(response);
-
 				res[0] = response;
 				res[1] = "";
 
 				reader.close();
-
 			} else {
 				res = readHttpResponse(socket);
 			}
@@ -99,14 +96,12 @@ public class HTTPQuery {
 			throw new UnknownHostException();
 		} catch (IOException e) {
 			e.printStackTrace();
-			//throw new IOException();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 
 		return res;
 	}
-
 
 	//TODO: del?
 	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
@@ -168,10 +163,7 @@ public class HTTPQuery {
 			throw new UnknownHostException();
 		} catch (IOException e) {
 			e.printStackTrace();
-			//throw new IOException();
-
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -255,7 +247,6 @@ public class HTTPQuery {
 		return lengthValue;
 	}
 
-
 	public String parseContentLengthFromHttpResponse(String response){
 		String[] responseLines = response.split("\n");
 		String _contentLength = "Content-Length: ";
@@ -278,17 +269,6 @@ public class HTTPQuery {
 		return typeValue + _seperator + lengthValue;
 	}
 
-	// <img src="www.ynet.co.il/image/logo_2.png ...>
-	// TODO: to del?
-	//
-	public String sendHttpHeadRequestAndGetTypeAndLengthFromResponse(String target) throws UnknownHostException, IOException{
-		//String response = sendHttpRequest(target, "HEAD")[0];
-		String response = sendHttpHeadRequestV2(target);
-		String lengthAndType = parseContentLengthFromHttpResponse(response);
-		return lengthAndType;
-	}
-
-
 	/**
 	 * 
 	 * @param target : link to communicate with
@@ -306,7 +286,6 @@ public class HTTPQuery {
 	public String[] sendHttpGetRequest(String target) throws IOException, UnknownHostException{
 		return sendHttpRequestV2(target, "GET");
 	}
-
 
 	/////////// INTERCEPT GET 
 	// Trick for Get request to receive HEAD
@@ -343,9 +322,7 @@ public class HTTPQuery {
 			writer.write(_CRLF.toCharArray());
 			writer.flush();
 
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
 			String line = reader.readLine();
 
 			// Read Request According to Http Protocol
@@ -362,10 +339,7 @@ public class HTTPQuery {
 			throw new UnknownHostException();
 		} catch (IOException e) {
 			e.printStackTrace();
-			//throw new IOException();
-
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

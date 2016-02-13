@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 public class AnalyzerTask implements Runnable {
 
-	//TODO: why linkedList?
 	LinkedList<String> m_externalAnchors;
 	LinkedList<String> m_internalAnchors;
 	LinkedList<String> m_images;
@@ -19,17 +18,12 @@ public class AnalyzerTask implements Runnable {
 
 	HTTPQuery query;
 
-	//DownloaderThreadPool m_DownloaderThreadPool;
-
 	String m_htmlSourceCode;
 	URI m_uri;
 	String m_pageAddress;
 	int m_sizeAndTypeOfPage;
 
-	//LinkReport m_report;
-
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
-		//m_DownloaderThreadPool = i_threadPool;
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", "");
 		m_pageAddress = i_pageAddress;
@@ -51,8 +45,6 @@ public class AnalyzerTask implements Runnable {
 		m_images = new LinkedList<>();
 		m_videos = new LinkedList<>();
 		m_docs = new LinkedList<>();
-
-		//m_report = createReport();
 	}
 
 	@Override
@@ -61,7 +53,6 @@ public class AnalyzerTask implements Runnable {
 		lookForImagesAndPopulate();
 
 		try {
-
 			// add to Report
 			addToDomainReport();
 			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
@@ -72,15 +63,10 @@ public class AnalyzerTask implements Runnable {
 				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// send all internal link to downloader queue
-		//LinkedList<String> internalLinksToDownload = getInternalAnchors();
-		//m_DownloaderThreadPool.addReportAndCheckIfFinished(m_report, m_report.m_pageAddress);
 	}
 
 	private void lookForImagesAndPopulate(){
@@ -91,7 +77,6 @@ public class AnalyzerTask implements Runnable {
 		getAllPropertiesValueByTagAndPopulateLists("<a", "href=");
 	}
 
-	
 	//String subjectTag = "<a";
 	//String propertyToSearchFor = "href=";
 	private void getAllPropertiesValueByTagAndPopulateLists(String subjectTag, String propertyToSearchFor){
@@ -219,54 +204,17 @@ public class AnalyzerTask implements Runnable {
 		return absoluteURL;
 	}
 
-
-	
-/*
-	// internal "/path../../somePage.html" , "path../../somePage.html", http://thisDomain/path/somePage.html, www.thisDomain
-	//
-	// h / # w ?
-	// remove suffix #suffix -> "/text/internallinks.html#section-names"
-	// TODO: del, version2
-	private String reformatAnchorLink(String link){// buildCorrectLink(String link){
-		String temp = "\n\n--> input link = " + link;
-		String stringToReturn = "";
-		String host = m_uri.getHost();
-
-		char firstChar = link.charAt(0);
-		int linkLength = link.length();
-
-		if(firstChar == '#' || (firstChar == '/' && linkLength == 1)){
-			return null;
-		}
-
-		link = (link.startsWith("/")) ? link.substring(1) : link;
-		link = (link.endsWith("/")) ? link.substring(0, linkLength) : link;
-
-		int indexOfSolamitInLink = link.indexOf('#');
-		if(indexOfSolamitInLink > 0){
-			link = link.substring(0, indexOfSolamitInLink);
-		}
-		link = link.startsWith("http://") == false ? (link) : (link.substring(7));
-		stringToReturn = "http://" + host + link;
-		if(link.startsWith("www.")){
-			stringToReturn = "http://" + link;
-		}
-		temp += "\n\n--> output link = " + stringToReturn;
-		System.out.println(temp);
-		return stringToReturn;	
-	}
-*/
 	/**
 	 * @param link -> anchor to be added to the external or internal lists if doesn't already exists
 	 * @return true on success
 	 */
 	private boolean populateAnchors(String link, String ext){
-
-		String formattedLink = attachAbsoluteUrlToLink(link);//reformatAnchorLink(link);
+		String formattedLink = attachAbsoluteUrlToLink(link); // fix link if needed
 		ext = (ext == null) ? "" : ext;
 		boolean inserted = false;
+		
 		if (formattedLink != null) {
-
+			//TODO
 			//linkURI = new URI(formattedLink);
 			boolean isInternal = isUrlInternal(formattedLink);
 			//if(linkURI.getHost().equals(m_uri.getHost())){
@@ -321,25 +269,12 @@ public class AnalyzerTask implements Runnable {
 		return str.substring(1, str.length());
 	}
 
-	
 	private void addToDomainReport() throws IOException, Exception {
-
 		fetchAllFromList(m_images, 0);
 		fetchAllFromList(m_videos, 1);
 		fetchAllFromList(m_docs, 2);
 		fetchAllFromList(m_externalAnchors, 3);
-		//fetchFromInternalLinks();
-
 	}
-
-	//	//TODO: del
-	//	private void fetchFromInternalLinks(){
-	//		for(int i = 0; i < m_internalAnchors.size(); i++){
-	//			String address = m_internalAnchors.get(i);
-	//			//Link link = new Link(address, "" , "", "0");
-	//			//m_report.addInternalPageLink(link);
-	//		}
-	//	}
 
 	/**
 	 * @TODO pages in links, are going to be downloaded anyway and will have own reports
@@ -412,8 +347,6 @@ public class AnalyzerTask implements Runnable {
 				e.printStackTrace();
 				System.out.println("failed send heads request -> link " + url);
 			}
-
-
 		}
 	}
 }

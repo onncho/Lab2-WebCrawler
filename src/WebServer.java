@@ -3,9 +3,6 @@ import java.util.HashMap;
 
 public class WebServer {
 	
-	public static final boolean TEST_PORT_SCAN = false;
-	public static int Number_Of_Downloaders = 0;
-	
 	public static void main(String[] args) throws IOException
 	{
 		HashMap<String, String> m_confList = new HashMap<>();
@@ -20,24 +17,15 @@ public class WebServer {
 
 		//ThreadPool threadPool = new ThreadPool(ConfigurationObject.getMaxThreads());
 		//ServerListener webserver = new ServerListener(threadPool);
-
 		//webserver.start();
-		Number_Of_Downloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
-		//DownloaderThreadPool threadP = new DownloaderThreadPool(Number_Of_Downloaders);
-		//ServerListener webSrv = new ServerListener(threadP);
-		//webSrv.start();
 		
-		CrawlerControler.getInstance();
-		
-		//if input port scan
-		if (TEST_PORT_SCAN) {
-			startPortScanner();
-		} 
-		// TODO: check how to get the indicatation to start the web crawler and to The Port Sccanner
-		startCrawling();
-			
+		int Number_Of_Downloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
+		DownloaderThreadPool threadP = new DownloaderThreadPool(Number_Of_Downloaders);
+		ServerListener webSrv = new ServerListener(threadP);
+		webSrv.start();	
 	}
 	
+	/*
 	//TODO: Domain transfer
 	private static void startPortScanner() {
 		Thread[] scanners = new Thread[Number_Of_Downloaders];
@@ -60,10 +48,12 @@ public class WebServer {
 			thread.start();
 		}
 	}
-	
+	*/
+	/*
 	// get the input from the user of the requested domain
 	public static void startCrawling() {
 		DownloaderTask task = new DownloaderTask("http://smallbasic.com");
 		CrawlerControler.getInstance().addTaskToDownloaderQueue(task);
 	}
+	*/
 }

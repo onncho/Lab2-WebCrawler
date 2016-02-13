@@ -8,8 +8,7 @@ public class WorkerT extends Thread {
 	}
 
 	public void run() {
-
-		//TODO: can be stop by traverse the workers and call interput
+		
 		while(!Thread.currentThread().isInterrupted()) {
 
 			// try to get a task from taskQueue, if the Queue is empty wait if not take it and remove it from the queue
@@ -17,16 +16,15 @@ public class WorkerT extends Thread {
 
 			try {
 				taskToExecute = (Runnable) m_tasks.dequeue();
+				System.out.println("Downloader or Analyzer dequeues from their queue, number of items left: \t" + m_tasks.getCapacity());
 				if (taskToExecute != null) {
 					taskToExecute.run();
 					WorkerLatch.getInstance().down();
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
 		}
 	}
-
 }
