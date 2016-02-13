@@ -17,6 +17,7 @@ public class CrawlerDB {
 	private CrawlerDB() {
 		m_DownloadLinks = new LinkedList<>();
 		m_AnalysisReports = new LinkedList<>();
+		m_ReportsIncludingPaths = new LinkedList<>();
 	}
 	
 	public void addReportAndPath(String[] i_reportAndPath) {
