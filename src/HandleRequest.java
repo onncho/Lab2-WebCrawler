@@ -115,10 +115,10 @@ public class HandleRequest implements Runnable {
 						if(file.getName().equals("params_info.html")){
 							fileToSend = res.templatedHTML;
 						}
-						/*else if((file.getName().equals("index.html")|| file.getName().equals("/")) && CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+						else if((file.getName().equals("index.html")|| file.getName().equals("/")) && CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 							System.out.println("running should be returned");
-							fileToSend = CrawlerClientUtil.generateHtmlIfCrawlerIsAlreadyInExecution().getBytes();
-						}*/
+							fileToSend = res.templatedHTML;
+						}
 						else {
 							fileToSend = Utils.readFile(file);
 						}
