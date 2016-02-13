@@ -1,9 +1,15 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 public class CrawlerControler {
 
@@ -17,6 +23,8 @@ public class CrawlerControler {
 	private DownloaderThreadPool m_DownloaderPool;
 	private AnalyzerThreadPool m_AnalyzerPool;
 	private State m_CrawlerState;
+	private String m_timeAndDate;
+	
 
 
 	public static CrawlerControler getInstance() {
@@ -44,6 +52,9 @@ public class CrawlerControler {
 	// start crawling
 	public synchronized void startCrawling(final String domain, final boolean shouldFullTcp, 
 			final boolean shouldDisrespectRobot) {
+		Date date = new Date();
+		m_timeAndDate = date.toString();
+		
 
 		DownloaderTask task = new DownloaderTask("http://smallbasic.com");
 		m_CrawlerState  = State.RUNNING;
@@ -172,12 +183,26 @@ public void saveReport(){
 				case "#_CRAWLED$DOMS$REPORTS_#":
 					htmlTemplate += m_ReportPerDomain.getFileNamesOfConnectedDomains();
 					break;
-				case "#_PORTS$OPEN_#"
-				case 
-					
+				case "#_PORTS$OPEN_#" : 
+					htmlTemplate += m_ReportPerDomain.getNumOfOpenPorts();
+					break;
+				default :
+					htmlTemplate += lineFromReader;
+					break;
 				}
-				htmlTemplate += lineFromReader;
 			}
+			reader.close();
+			
+			
+			/// Finished reading and inserting data ///
+			
+			String fileName = (m_ReportPerDomain.getDomain().replaceAll("\\.", "_") + ".html");
+			File report = new File(pathToRoot + fileName);
+			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
+			
+			
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

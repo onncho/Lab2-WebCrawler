@@ -150,6 +150,10 @@ public class ReportPerDomain {
 	public int getNumOfOpenPorts(){
 		return ports.size();
 	}
+	
+	public String getDomain(){
+		return m_Domain;
+	}
 
 
 }
