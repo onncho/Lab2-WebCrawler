@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
 
+import org.omg.Messaging.SyncScopeHelper;
+
 
 
 
@@ -151,21 +153,27 @@ public class HandleRequest implements Runnable {
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
 		HTTPResponse res;
+		
 		if(checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
 			res = crawlerFlow(req.m_HttpRequestParams, contentLength);
-		} else {res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);}
+		} else {
+			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+		}
 		
 		return res;
 		
 	}
-
+	
+	//receive parameters for crawler
 	private boolean checkForCrawler(HashMap<String,String> reqHeaders, HashMap<String, String> reqParams) {
 		//System.out.println("175 -->" + reqParams.get("URI"));
 		if(reqHeaders == null){return false;}
 
 		boolean clientAsksForCrawler = reqHeaders.get("URI").equals("/execResult.html");
 		if(clientAsksForCrawler == false) {return false;}//returning false since in this case we will go for normal response
+		
 		if(!reqParams.containsKey("domainToCrawl")){
+			System.out.println("Bad input!");
 			return false;
 		}
 		return true;
@@ -176,15 +184,15 @@ public class HandleRequest implements Runnable {
 		boolean checkForPortsParamExists = reqParams.containsKey("PortScanChecked");
 		boolean respectRobotsTxtExists = reqParams.containsKey("RobotsChecked");
 
-
 		String domainToCrawl = reqParams.get("domainToCrawl");
 		boolean checkForPorts = checkForPortsParamExists ? reqParams.get("PortScanChecked").equals("Checked") : false;
 		boolean respectRobotsTxt = respectRobotsTxtExists ? reqParams.get("RobotsChecked").equals("Checked") : false;
+	
 		if (checkForPorts) {
 			doPortScan();
 		}
+		
 		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest);
-
 	}
 
 	private void doPortScan() {

@@ -76,6 +76,7 @@ public class HTTPResponse {
 	}
 
 	// The Method for clients of this object
+	// without body
 	public String GenerateResponse() 
 	{
 		String result = constructResponse();
@@ -190,13 +191,13 @@ public class HTTPResponse {
 						templatedHTML = HTMLTemplater.templateHTML(file,m_HttpRequestParams);
 						m_ContentLength = (int) templatedHTML.length;
 					} //TODO: insert the executeResult.html here?
-					else if ((file.getName().equals("/") || file.getName().equals("index.html")) &&
+					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 							CrawlerControler.getInstance().CrawlerIsWorking()) {
 
 						// change home page
 						String responseBody = CrawlerClientUtil.generateHtmlIfCrawlerIsAlreadyInExecution();
-						templatedHTML = responseBody.getBytes();
-						m_ContentLength = (int) responseBody.getBytes().length;
+						templatedHTML = responseBody.trim().getBytes();
+						m_ContentLength = (int) responseBody.trim().getBytes().length;
 						
 					}
 					else {
