@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 
 
+
 public class HandleRequest implements Runnable {
 
 	private final Socket m_Connection;
@@ -21,7 +22,7 @@ public class HandleRequest implements Runnable {
 	int m_contentLength;
 	char[] m_MsgBodyCharBuffer;
 	StringBuilder m_MessageBodyBuilder;
-	
+
 	CrawlerClientUtil crawlerUtil = new CrawlerClientUtil();
 
 	private final String ContentLengthHeader = "Content-Length: ";
@@ -117,7 +118,7 @@ public class HandleRequest implements Runnable {
 							writer.flush();
 						}
 
-					//serving as chunks
+						//serving as chunks
 					} else {
 						if(file.getName().equals("params_info.html")){
 							writeChunkString(res.templatedHTML, writer);
@@ -135,84 +136,93 @@ public class HandleRequest implements Runnable {
 
 	// create http request and response
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
+		/*HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+		HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+		return res;*/
+		String localFullRequest = i_fullRequest + "\n";
+		String localMsgBody = msgBody + " ";
+		int localLength = contentLength;
 		HTTPResponse res;
+
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-		
-		if(!checkForCrawler(req)){
-			
-			if(req.m_RequestedPage.equals("/")){
+		if(!checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
+			if(req.getMap().get("URI").equals("/") || req.getMap().get("URI").equals("/index.html")){
 				if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
-					//working
-					int indexOfRoot = i_fullRequest.indexOf("/");
-					String newRequest = "";
-					if(indexOfRoot > -1){
-						newRequest = i_fullRequest.substring(0,indexOfRoot) + "/Running.html" + i_fullRequest.substring(indexOfRoot + 1);
-						req = new HTTPRequest(newRequest, msgBody, contentLength);
-						res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-						return res;
-					}
-					
+					//reroute to ruuning
+					String newRequestString = (req.getMap().get("originalRequest")).replace("/", "/Running.html");
+					req = new HTTPRequest(newRequestString, req.getMap().get("mzgBody"), contentLength);
+					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+				} else {
+					req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
 				}
-				/*else if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.WAITING)){
-					//waiting
-				}*/
-		
+			} else {
+				req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+				res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
 			}
-			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-			return res;
-			
 		} else {
-			// starting crawling and there for need to hold the entire flow until when the crawler will finish
-			 
-			 res = crawlerFlow(req); 
-					// new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+			res = crawlerFlow(req.m_HttpRequestParams, localLength);
 		}
 		return res;
+
 	}
 
 
-	private boolean checkForCrawler(HTTPRequest req) {
-		boolean clientAsksForCrawler = req.m_RequestedPage.equals("/execResult.html");
-		if(req.m_HttpRequestParams == null || clientAsksForCrawler == false) {return false;}//returning false since in this case we will go for normal response
-		if(!req.m_HttpRequestParams.containsKey("domainToCrawl")){
+	private boolean checkForCrawler(HashMap<String,String> reqHeaders, HashMap<String, String> reqParams) {
+		//System.out.println("175 -->" + reqParams.get("URI"));
+		if(reqHeaders == null){return false;}
+
+		boolean clientAsksForCrawler = reqHeaders.get("URI").equals("/execResult.html");
+		if(clientAsksForCrawler == false) {return false;}//returning false since in this case we will go for normal response
+		if(!reqParams.containsKey("domainToCrawl")){
 			return false;
 		}
 		return true;
 	}
 
-	private HTTPResponse crawlerFlow(HTTPRequest req){
-		HashMap<String,String> copyOfParams = req.m_HttpRequestParams;
-		boolean checkForPortsParamExists = copyOfParams.containsKey("PortScanChecked");
-		boolean respectRobotsTxtExists = copyOfParams.containsKey("RobotsChecked");
+	private HTTPResponse crawlerFlow(HashMap<String,String> reqParams, int contentLengthOfOriginalRequest){
+
+		boolean checkForPortsParamExists = reqParams.containsKey("PortScanChecked");
+		boolean respectRobotsTxtExists = reqParams.containsKey("RobotsChecked");
 
 
-		String domainToCrawl = copyOfParams.get("domainToCrawl");
-		boolean checkForPorts = checkForPortsParamExists ? copyOfParams.get("PortScanChecked").equals("Checked") : false;
-		boolean respectRobotsTxt = respectRobotsTxtExists ? copyOfParams.get("RobotsChecked").equals("Checked") : false;
+		String domainToCrawl = reqParams.get("domainToCrawl");
+		boolean checkForPorts = checkForPortsParamExists ? reqParams.get("PortScanChecked").equals("Checked") : false;
+		boolean respectRobotsTxt = respectRobotsTxtExists ? reqParams.get("RobotsChecked").equals("Checked") : false;
 		if (checkForPorts) {
 			doPortScan();
 		}
-		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, req);
+		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest);
 
 	}
-	
+
 	private void doPortScan() {
 		CrawlerControler.getInstance().startPortScanner();
 	}
 
-	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HTTPRequest req) {
+	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HashMap<String,String> reqParams, int contentLengthOfOriginalRequest) {
 		// TODO init crawler
-	HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+		if(!domainToCrawl.startsWith("http://")){
+			int www = domainToCrawl.indexOf("www.");
+			domainToCrawl = "http://" + domainToCrawl.substring(www);
+		}
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
-		while(!CrawlerControler.getInstance().getState().equals(CrawlerControler.State.STOPPING)){
+		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 			try {
-				Thread.sleep(300);
+				Thread.currentThread().sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return res;
+		// POST /execResult.html HTTP/1.1
+		String newPath = CrawlerControler.getInstance().saveReport();
+
+		String newRequestString = (reqParams.get("originalRequest")).replace("/execResult.html", newPath);
+		System.out.println("new request \n---\n" + newRequestString + "\n---\n");
+		HTTPRequest newReq = new HTTPRequest(newRequestString, reqParams.get("mzgBody"), contentLengthOfOriginalRequest);
+
+		return new HTTPResponse(newReq.getMap(), newReq.m_HttpRequestParams);
 	}
 
 	private void writeChunkData(File file, DataOutputStream writer){

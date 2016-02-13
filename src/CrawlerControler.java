@@ -34,7 +34,7 @@ public class CrawlerControler {
 	private CrawlerControler() {
 
 		// TODO: get domain get from config.ini
-		m_ReportPerDomain = new ReportPerDomain("http://smallbasic.com");
+		
 		m_DownloaderPool = new DownloaderThreadPool(2);
 		m_AnalyzerPool = new AnalyzerThreadPool(1);
 		m_CrawlerState = State.WAITING;
@@ -54,8 +54,10 @@ public class CrawlerControler {
 			 boolean shouldDisrespectRobot) {
 		Date date = new Date();
 		m_timeAndDate = date.toString();
-		
-
+		m_ReportPerDomain = new ReportPerDomain(domain);
+		if(shouldFullTcp){
+			startPortScanner();
+		}
 		DownloaderTask task = new DownloaderTask(domain);
 		m_CrawlerState  = State.RUNNING;
 		addTaskToDownloaderQueue(task);
@@ -72,7 +74,7 @@ public class CrawlerControler {
 		//Create threads
 		for (int i = 0; i < scanners.length; i++) {
 			int endPort = startScanPort + portsPerScanner;
-			PortScanner scanner = new PortScanner("http://smallbasic.com",
+			PortScanner scanner = new PortScanner(m_ReportPerDomain.getDomain(),
 					startScanPort, endPort, scannerLatch);
 			scanners[i] = new Thread(scanner);
 			startScanPort = endPort + 1;
@@ -141,8 +143,8 @@ public class CrawlerControler {
 		m_ReportPerDomain.addPorts(ports);
 	}
 
-public void saveReport(){
-		
+public String saveReport(){
+		String fileName = "";
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
 		String htmlTemplate = "";
@@ -204,8 +206,8 @@ public void saveReport(){
 			
 			/// Finished reading and inserting data ///
 			String domain = m_ReportPerDomain.getDomain().replaceAll("/", "");
-			String fileName = (domain.replaceAll("\\.", "_") + ".html");
-			File report = new File(pathToRoot + fileName);
+			fileName = (domain.replaceAll("\\.", "_")+ "_"+m_timeAndDate.replaceAll(" ", "_") + ".html");
+			File report = new File(pathToRoot + "reports\\"+ fileName);
 			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
 			writer.print(htmlTemplate);
 			writer.flush();
@@ -214,6 +216,7 @@ public void saveReport(){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return "\\reports\\" +fileName;
 	}
 
 

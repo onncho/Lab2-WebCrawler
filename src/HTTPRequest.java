@@ -71,6 +71,7 @@ public class HTTPRequest {
 		if(m_RequestType.displayName().equals(HttpRequestType.TRACE.displayName())){
 			if(m_httpMessageBody != null){
 				m_requestHeaders.put("originalRequest", m_originalRequest+"\r\n"+m_httpMessageBody+"\r\n");
+				m_requestHeaders.put("mzgBody", m_httpMessageBody);
 			} else {
 				m_requestHeaders.put("originalRequest", m_originalRequest);
 			}
