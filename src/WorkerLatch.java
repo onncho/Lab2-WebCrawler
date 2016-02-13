@@ -19,13 +19,11 @@ public class WorkerLatch {
 	}
 
 	public void finish() {
-		//TODO - STOP ALL THREADS RUNNING
 		System.out.println("Crawling needs to finish");
 		try {
 			CrawlerControler.getInstance().print();
 			CrawlerControler.getInstance().saveReport();
-			//State stop = State.STOPPING;
-			//CrawlerControler.getInstance().changeState(State.STOPPING);
+			CrawlerControler.getInstance().changeState(CrawlerControler.State.STOPPING);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
