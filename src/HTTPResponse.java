@@ -189,7 +189,11 @@ public class HTTPResponse {
 					if(file.getName().equals("params_info.html")){
 						templatedHTML = HTMLTemplater.templateHTML(file,m_HttpRequestParams);
 						m_ContentLength = (int) templatedHTML.length;
+					} if (file.getName().equals("index.html") && 
+							(CrawlerControler.getInstance().CrawlerIsWorking())) {
+						
 					} 
+					//TODO: insert the executeResult.html here?
 					
 					else {
 						m_ContentLength = (int) file.length();

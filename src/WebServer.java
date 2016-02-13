@@ -15,45 +15,14 @@ public class WebServer {
 			throw new IOException("Problem in Reading The Config File");
 		}
 
-		//ThreadPool threadPool = new ThreadPool(ConfigurationObject.getMaxThreads());
-		//ServerListener webserver = new ServerListener(threadPool);
-		//webserver.start();
+		//int Number_Of_Downloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
+		ThreadPool threadPool = new ThreadPool(ConfigurationObject.getMaxThreads());
+		ServerListener webserver = new ServerListener(threadPool);
+		webserver.start();
 		
-		int Number_Of_Downloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
-		DownloaderThreadPool threadP = new DownloaderThreadPool(Number_Of_Downloaders);
-		ServerListener webSrv = new ServerListener(threadP);
-		webSrv.start();	
+		//DownloaderThreadPool threadP = new DownloaderThreadPool(Number_Of_Downloaders);
+		//ServerListener webSrv = new ServerListener(threadP);
+		//webSrv.start();	
 	}
 	
-	/*
-	//TODO: Domain transfer
-	private static void startPortScanner() {
-		Thread[] scanners = new Thread[Number_Of_Downloaders];
-		int startScanPort = 0;
-		int portsPerScanner = 65535 / Number_Of_Downloaders;
-		
-		PortScannerLatch scannerLatch = PortScannerLatch.getInstance();
-		
-		//Create threads
-		for (int i = 0; i < scanners.length; i++) {
-			int endPort = startScanPort + portsPerScanner;
-			PortScanner scanner = new PortScanner("http://smallbasic.com",
-					startScanPort, endPort, scannerLatch);
-			scanners[i] = new Thread(scanner);
-			startScanPort = endPort + 1;
-		}
-		
-		//Start thread
-		for (Thread thread : scanners) {
-			thread.start();
-		}
 	}
-	*/
-	/*
-	// get the input from the user of the requested domain
-	public static void startCrawling() {
-		DownloaderTask task = new DownloaderTask("http://smallbasic.com");
-		CrawlerControler.getInstance().addTaskToDownloaderQueue(task);
-	}
-	*/
-}

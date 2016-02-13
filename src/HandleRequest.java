@@ -12,6 +12,8 @@ import java.util.HashMap;
 
 
 
+
+
 public class HandleRequest implements Runnable {
 
 	private final Socket m_Connection;
@@ -85,7 +87,9 @@ public class HandleRequest implements Runnable {
 		} 
 	}
 
+	//TODO: simply write data + response code according to the request data --> no logic
 	public void handleResponse(HTTPResponse res, Socket connection){
+		// LAB 2 --> will enter with GET /executeResult.html
 		String response = res.GenerateResponse();
 		DataOutputStream writer;
 
@@ -134,39 +138,49 @@ public class HandleRequest implements Runnable {
 		}
 	}
 
+	// GET execute --> CrawlerisRunning.... executeResult.html --> 
+	// Refresh --> Get --> Running - NO --> executeNEW
 	// create http request and response
+	// TODO: can't debug only works when not stopping
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
-		/*HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-		HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-		return res;*/
-		String localFullRequest = i_fullRequest + "\n";
-		String localMsgBody = msgBody + " ";
-		int localLength = contentLength;
-		HTTPResponse res;
-
+		
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-		if(!checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
-			if(req.getMap().get("URI").equals("/") || req.getMap().get("URI").equals("/index.html")){
-				if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
-					//reroute to ruuning
-					String newRequestString = (req.getMap().get("originalRequest")).replace("/", "/Running.html");
-					req = new HTTPRequest(newRequestString, req.getMap().get("mzgBody"), contentLength);
-					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-				} else {
-					req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-				}
-			} else {
-				req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-				res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-			}
-		} else {
-			res = crawlerFlow(req.m_HttpRequestParams, localLength);
-		}
+		
+		//create response for page executeResult.html with "Crawler in Running"
+//		if (CrawlerIsWorking()) {
+//			HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+//		}
+		
+		
+		HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+//		return res;*/
+//		String localFullRequest = i_fullRequest + "\n";
+//		String localMsgBody = msgBody + " ";
+//		int localLength = contentLength;
+//		HTTPResponse res;
+//
+//		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+//		if(!checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
+//			if(req.getMap().get("URI").equals("/") || req.getMap().get("URI").equals("/index.html")){
+//				if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+//					//reroute to ruuning
+//					String newRequestString = (req.getMap().get("originalRequest")).replace("/", "/Running.html");
+//					req = new HTTPRequest(newRequestString, req.getMap().get("mzgBody"), contentLength);
+//					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+//				} else {
+//					req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+//					res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+//				}
+//			} else {
+//				req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+//				res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+//			}
+//		} else {
+//			res = crawlerFlow(req.m_HttpRequestParams, localLength);
+//		}
 		return res;
 
 	}
-
 
 	private boolean checkForCrawler(HashMap<String,String> reqHeaders, HashMap<String, String> reqParams) {
 		//System.out.println("175 -->" + reqParams.get("URI"));

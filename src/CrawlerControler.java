@@ -48,6 +48,14 @@ public class CrawlerControler {
 	public void addTaskToAnalyzerQueue(Runnable task) {
 		m_AnalyzerPool.putTaskInAnalyzerQueue(task);
 	}
+	
+	public boolean CrawlerIsWorking() {
+		if (this.getState() == State.RUNNING) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	// start crawling
 	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
