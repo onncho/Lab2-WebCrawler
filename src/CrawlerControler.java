@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.event.TreeWillExpandListener;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 public class CrawlerControler {
@@ -24,9 +25,8 @@ public class CrawlerControler {
 	private AnalyzerThreadPool m_AnalyzerPool;
 	private State m_CrawlerState;
 	private String m_timeAndDate;
+	private boolean m_PortscannerRunning;
 	
-
-
 	public static CrawlerControler getInstance() {
 		return instance;
 	}
@@ -38,6 +38,7 @@ public class CrawlerControler {
 		m_DownloaderPool = new DownloaderThreadPool(2);
 		m_AnalyzerPool = new AnalyzerThreadPool(1);
 		m_CrawlerState = State.WAITING;
+		m_PortscannerRunning = false;
 	}
 
 
@@ -47,6 +48,10 @@ public class CrawlerControler {
 
 	public void addTaskToAnalyzerQueue(Runnable task) {
 		m_AnalyzerPool.putTaskInAnalyzerQueue(task);
+	}
+	
+	public void switchPortScannerStatus() {
+		m_PortscannerRunning = !m_PortscannerRunning;
 	}
 	
 	public boolean CrawlerIsWorking() {
@@ -60,14 +65,26 @@ public class CrawlerControler {
 	// start crawling
 	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
 			 boolean shouldDisrespectRobot) {
+		m_CrawlerState  = State.RUNNING;
 		Date date = new Date();
 		m_timeAndDate = date.toString();
 		m_ReportPerDomain = new ReportPerDomain(domain);
+		
 		if(shouldFullTcp){
+			m_PortscannerRunning = true;
 			startPortScanner();
 		}
+		
+		while(m_PortscannerRunning) {
+			try {
+				Thread.currentThread().sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		DownloaderTask task = new DownloaderTask(domain);
-		m_CrawlerState  = State.RUNNING;
 		addTaskToDownloaderQueue(task);
 	}
 
@@ -76,6 +93,7 @@ public class CrawlerControler {
 		Thread[] scanners = new Thread[Number_Of_Downloaders];
 		int startScanPort = 0;
 		int portsPerScanner = 65535 / Number_Of_Downloaders;
+		
 
 		PortScannerLatch scannerLatch = PortScannerLatch.getInstance();
 
@@ -92,6 +110,7 @@ public class CrawlerControler {
 		for (Thread thread : scanners) {
 			thread.start();
 		}
+		
 	}
 
 	public void changeState(State state) {
@@ -161,7 +180,7 @@ public synchronized String[] saveReport(){
 			String lineFromReader;
 			while((lineFromReader = reader.readLine()) != null){
 				//String realValueOfLine = "";
-				switch(lineFromReader){
+				switch(lineFromReader.trim()){
 				case "#_ROBOTS_#":
 					htmlTemplate += m_ReportPerDomain.isDisrespectRobot;
 					break;

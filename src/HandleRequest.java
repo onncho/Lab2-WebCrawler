@@ -192,19 +192,10 @@ public class HandleRequest implements Runnable {
 
 		String domainToCrawl = reqParams.get("domainToCrawl");
 		boolean checkForPorts = checkForPortsParamExists ? reqParams.get("PortScanChecked").equals("Checked") : false;
-		boolean respectRobotsTxt = respectRobotsTxtExists ? reqParams.get("RobotsChecked").equals("Checked") : false;
-	
-		if (checkForPorts) {
-			doPortScan();
-		}
-		
+		boolean respectRobotsTxt = respectRobotsTxtExists ? reqParams.get("RobotsChecked").equals("Checked") : false;	
 		boolean crawlFinishedSuceessfully = doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest); 
 		
 		return crawlFinishedSuceessfully;
-	}
-
-	private void doPortScan() {
-		CrawlerControler.getInstance().startPortScanner();
 	}
 
 	private boolean doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HashMap<String,String> reqParams, int contentLengthOfOriginalRequest) {

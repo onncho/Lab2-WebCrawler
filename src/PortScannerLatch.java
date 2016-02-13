@@ -15,11 +15,6 @@ public class PortScannerLatch extends WorkerLatch {
 	@Override
 	public void finish() {
 		System.out.println("Finished Port Scan");
-		try {
-			CrawlerControler.getInstance().print();
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		CrawlerControler.getInstance().switchPortScannerStatus();
 	}
 }
