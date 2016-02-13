@@ -199,10 +199,9 @@ public void saveReport(){
 			String fileName = (m_ReportPerDomain.getDomain().replaceAll("\\.", "_") + ".html");
 			File report = new File(pathToRoot + fileName);
 			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
-			
-			
-			
-			
+			writer.print(htmlTemplate);
+			writer.flush();
+			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
