@@ -200,6 +200,15 @@ public class HTTPResponse {
 						m_ContentLength = (int) responseBody.trim().getBytes().length;
 						
 					}
+					else if (file.getName().equals("/execResult.html") &&
+							!CrawlerControler.getInstance().CrawlerIsWorking()) {
+			
+						String responseBody = CrawlerDB.getInstance().getLastReportIncludingPath()[1];
+						System.out.println(responseBody);
+						templatedHTML = responseBody.trim().getBytes();
+						m_ContentLength = (int) templatedHTML.length;
+						
+					}
 					else {
 						m_ContentLength = (int) file.length();
 					}

@@ -8,6 +8,8 @@ public class CrawlerDB {
 	//TODO: decide on report object
 	private static LinkedList<String> m_AnalysisReports;
 	
+	private LinkedList<String[]> m_ReportsIncludingPaths; 
+	
 	public static CrawlerDB getInstance() {
 		return instance;
 	}
@@ -15,6 +17,14 @@ public class CrawlerDB {
 	private CrawlerDB() {
 		m_DownloadLinks = new LinkedList<>();
 		m_AnalysisReports = new LinkedList<>();
+	}
+	
+	public void addReportAndPath(String[] i_reportAndPath) {
+		m_ReportsIncludingPaths.addLast(i_reportAndPath);
+	}
+	
+	public String[] getLastReportIncludingPath() {
+		return m_ReportsIncludingPaths.getLast();
 	}
 	
 	public synchronized LinkedList<String> getDownloadedLinks() {

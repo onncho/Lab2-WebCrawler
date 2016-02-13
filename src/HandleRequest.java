@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.omg.Messaging.SyncScopeHelper;
 
@@ -121,6 +122,10 @@ public class HandleRequest implements Runnable {
 							System.out.println("running should be returned");
 							fileToSend = res.templatedHTML;
 						}
+						else if (file.getName().equals("execResult.html") && !CrawlerControler.getInstance().CrawlerIsWorking()) {
+							System.out.println("generating ExecResult Page");
+							fileToSend = res.templatedHTML;
+						}
 						else {
 							fileToSend = Utils.readFile(file);
 						}
@@ -153,15 +158,15 @@ public class HandleRequest implements Runnable {
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
 		HTTPResponse res;
+		boolean goodCrawler = false;
 		
 		if(checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
-			res = crawlerFlow(req.m_HttpRequestParams, contentLength);
-		} else {
-			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+			 goodCrawler = crawlerFlow(req.m_HttpRequestParams, contentLength);
 		}
 		
-		return res;
-		
+		res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+	
+		return res;	
 	}
 	
 	//receive parameters for crawler
@@ -179,7 +184,7 @@ public class HandleRequest implements Runnable {
 		return true;
 	}
 
-	private HTTPResponse crawlerFlow(HashMap<String,String> reqParams, int contentLengthOfOriginalRequest){
+	private boolean crawlerFlow(HashMap<String,String> reqParams, int contentLengthOfOriginalRequest){
 
 		boolean checkForPortsParamExists = reqParams.containsKey("PortScanChecked");
 		boolean respectRobotsTxtExists = reqParams.containsKey("RobotsChecked");
@@ -192,20 +197,26 @@ public class HandleRequest implements Runnable {
 			doPortScan();
 		}
 		
-		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest);
+		boolean crawlFinishedSuceessfully = doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest); 
+		
+		return crawlFinishedSuceessfully;
 	}
 
 	private void doPortScan() {
 		CrawlerControler.getInstance().startPortScanner();
 	}
 
-	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HashMap<String,String> reqParams, int contentLengthOfOriginalRequest) {
+	private boolean doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HashMap<String,String> reqParams, int contentLengthOfOriginalRequest) {
 		// TODO init crawler
+		boolean res = false;
 		if(!domainToCrawl.startsWith("http://")){
 			int www = domainToCrawl.indexOf("www.");
 			domainToCrawl = "http://" + domainToCrawl.substring(www);
 		}
+		
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
+		
+		// waiting for crawling to finish
 		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 			try {
 				Thread.currentThread().sleep(200);
@@ -214,14 +225,16 @@ public class HandleRequest implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		// POST /execResult.html HTTP/1.1
-		String newPath = CrawlerControler.getInstance().saveReport();
-
-		String newRequestString = (reqParams.get("originalRequest")).replace("/execResult.html", newPath);
-		System.out.println("new request \n---\n" + newRequestString + "\n---\n");
-		HTTPRequest newReq = new HTTPRequest(newRequestString, reqParams.get("mzgBody"), contentLengthOfOriginalRequest);
-
-		return new HTTPResponse(newReq.getMap(), newReq.m_HttpRequestParams);
+		
+		try {
+			String[] newReport = CrawlerControler.getInstance().saveReport();
+			CrawlerDB.getInstance().addReportAndPath(newReport); 
+			res = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return res;
 	}
 
 	private void writeChunkData(File file, DataOutputStream writer){

@@ -151,7 +151,7 @@ public class CrawlerControler {
 		m_ReportPerDomain.addPorts(ports);
 	}
 
-public String saveReport(){
+public String[] saveReport(){
 		String fileName = "";
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
@@ -227,7 +227,12 @@ public String saveReport(){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "\\reports\\" +fileName;
+		
+		//return "\\reports\\" +fileName;
+		String[] pathAndBody = new String[2];
+		pathAndBody[0] = "\\reports\\" + fileName;
+		pathAndBody[1] = htmlTemplate;
+		return pathAndBody;
 	}
 
 
