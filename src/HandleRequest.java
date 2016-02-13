@@ -102,14 +102,20 @@ public class HandleRequest implements Runnable {
 				// Send The File and Close Response As Http protocol request
 				if(res.getPathToFile() != null && res.fileIsExpected()){
 					File file= new File(res.getPathToFile());
-
+					
+					System.out.println(file.getName());//TODO: delete 
 					//serving without chunked transfer
 					if(!res.v_isChunked){
 						byte[] fileToSend;
-
+						System.out.println("crawler state : " + CrawlerControler.getInstance().getState().toString());
 						if(file.getName().equals("params_info.html")){
 							fileToSend = res.templatedHTML;
-						} else {
+						}
+						/*else if((file.getName().equals("index.html")|| file.getName().equals("/")) && CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+							System.out.println("running should be returned");
+							fileToSend = CrawlerClientUtil.generateHtmlIfCrawlerIsAlreadyInExecution().getBytes();
+						}*/
+						else {
 							fileToSend = Utils.readFile(file);
 						}
 
@@ -136,10 +142,14 @@ public class HandleRequest implements Runnable {
 
 	// create http request and response
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
-		/*HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
-		HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-		return res;*/
-		String localFullRequest = i_fullRequest + "\n";
+		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
+		HTTPResponse res;
+		if(checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
+			res = crawlerFlow(req.m_HttpRequestParams, contentLength);
+		} else {res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);}
+		
+		return res;
+		/*String localFullRequest = i_fullRequest + "\n";
 		String localMsgBody = msgBody + " ";
 		int localLength = contentLength;
 		HTTPResponse res;
@@ -164,7 +174,7 @@ public class HandleRequest implements Runnable {
 			res = crawlerFlow(req.m_HttpRequestParams, localLength);
 		}
 		return res;
-
+*/
 	}
 
 

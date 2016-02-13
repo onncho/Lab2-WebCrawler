@@ -64,7 +64,7 @@ public class CrawlerClientUtil {
 		return js;
 	}
 	
-	private String replaceCrawlerFormInIndexHtml(String html){
+	private static String replaceCrawlerFormInIndexHtml(String html){
 		String findInHtml = "<form id = 'crawlerForm' method = 'POST' action = '/execResult.html'>";
 		String whereToStop = "</form>";
 		
@@ -75,10 +75,10 @@ public class CrawlerClientUtil {
 		return html.substring(0,indexStart) + replaceWithString + html.substring(indexEnd);
 	}
 	
-	public String generateHtmlIfCrawlerIsAlreadyInExecution(){
+	public static String generateHtmlIfCrawlerIsAlreadyInExecution(){
 		String userDir = System.getProperty("user.dir");
 		String html = "";
-		File htmlFile = new File(userDir + "\\GUI\\index.html");
+		File htmlFile = new File(userDir + "\\serverroot\\index.html");
 		try {
 			FileReader fileReader = new FileReader(htmlFile);
 			BufferedReader reader = new BufferedReader(fileReader);
@@ -87,6 +87,7 @@ public class CrawlerClientUtil {
 			while((line = reader.readLine()) != null){
 				html += line;
 			}
+			reader.close();
 			
 			return replaceCrawlerFormInIndexHtml(html);
 			
