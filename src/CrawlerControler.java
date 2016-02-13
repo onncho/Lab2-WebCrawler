@@ -214,7 +214,10 @@ public String saveReport(){
 			
 			/// Finished reading and inserting data ///
 			String domain = m_ReportPerDomain.getDomain().replaceAll("/", "");
+			domain = domain.replace("http", "");
+			domain = domain.replaceAll(":", "");
 			fileName = (domain.replaceAll("\\.", "_")+ "_"+m_timeAndDate.replaceAll(" ", "_") + ".html");
+			
 			File report = new File(pathToRoot + "reports\\"+ fileName);
 			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
 			writer.print(htmlTemplate);
