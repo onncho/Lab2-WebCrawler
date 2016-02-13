@@ -6,7 +6,7 @@ public class WorkerLatch {
 	public static WorkerLatch getInstance() {
 		return instance;
 	}
-	
+
 	protected WorkerLatch() {
 	}
 
@@ -24,10 +24,8 @@ public class WorkerLatch {
 			CrawlerControler.getInstance().print();
 			CrawlerControler.getInstance().saveReport();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

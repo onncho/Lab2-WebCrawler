@@ -7,8 +7,6 @@ public class DownloaderThreadPool {
 	int m_NumOfDownloaders;
 	WorkerT[] m_WorkersThreads;
 	
-	//TODO: maybe to Add List of Links
-	
 	public DownloaderThreadPool (int i_NumOfDownloaders) {
 		m_NumOfDownloaders = i_NumOfDownloaders;
 		m_DownloaderQueue = new SynchronizedQueueLL();

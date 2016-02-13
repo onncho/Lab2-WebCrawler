@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class PortScanner implements Runnable {
 
-	//TODO: convert to multi-threaded
-
 	String m_target;
 	int m_StartPort;
 	int m_EndPort;
@@ -16,7 +14,7 @@ public class PortScanner implements Runnable {
 	private final String m_RegexHttp;
 	private String m_TargetParsed;
 	private PortScannerLatch m_latch;
-	
+
 	public PortScanner(String i_Target, int i_StartPort, int i_EndPort, PortScannerLatch i_latch) {
 		m_target = i_Target;
 		m_StartPort = i_StartPort;
@@ -32,7 +30,7 @@ public class PortScanner implements Runnable {
 	private void getIpFromHost() {
 		// if target is ip version 4
 		if (m_target.matches(m_RegexDefinition) == false) {		
-			
+
 			m_target = m_target.replaceFirst(m_RegexHttp, "");
 			InetAddress address;
 
@@ -46,11 +44,9 @@ public class PortScanner implements Runnable {
 	}
 
 	public ArrayList<Integer> runScan() {
-		 
-		for (int port = m_StartPort ; port < m_EndPort; port++) {
 
-			try 
-			{	
+		for (int port = m_StartPort ; port < m_EndPort; port++) {
+			try {	
 				Socket socket = new Socket();
 
 				if (m_TargetParsed != null) {					
@@ -65,6 +61,7 @@ public class PortScanner implements Runnable {
 				System.out.println("Port : " + port + " is Closed");
 			}
 		}
+
 		return m_OpenPorts;
 	}
 
@@ -75,5 +72,4 @@ public class PortScanner implements Runnable {
 		CrawlerControler.getInstance().addPorts(ports);
 		m_latch.down();
 	}
-
 }
