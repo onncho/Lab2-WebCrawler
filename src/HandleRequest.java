@@ -107,6 +107,7 @@ public class HandleRequest implements Runnable {
 				}
 
 				// Send The File and Close Response As Http protocol request
+				// TODO: enter here also when ExecResult request and alsp HTMLTEMPLATE is none
 				if(res.getPathToFile() != null && res.fileIsExpected()){
 					File file= new File(res.getPathToFile());
 					

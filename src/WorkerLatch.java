@@ -22,7 +22,6 @@ public class WorkerLatch {
 		System.out.println("Crawling needs to finish");
 		try {
 			CrawlerControler.getInstance().print();
-			CrawlerControler.getInstance().saveReport();
 			CrawlerControler.getInstance().changeState(CrawlerControler.State.STOPPING);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
