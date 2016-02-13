@@ -121,12 +121,35 @@
         </head>
         <body>
 
-            <div class="container">
+            <div class="container" id = "containerToReplace">
                 <!-- Fixed Title -->
                 <h2>Web Crawler Already Running...</h2>
             </div>
 
             <!-- Horizontal line -->
             <hr>
+        <script>
+            var mayIStopChecking  = false;
+            var reportChecker = setInterval(function(){checkIfReportIsFinished();}, 3000);
+
+            function checkIfReportIsFinished(){
+                if(mayIStopChecking){
+                    clearInterval(reportChecker);
+                }
+                var domainToCheckFor = '';
+                var ajax = new XMLHttpRequest();
+                var url = 'localhost:8080/getCrawlerReportForDomain=' + domainToCheckFor;
+                ajax.onreadystatechange = function() {
+                    if (ajax.readyState == 4 && ajax.status == 200) {
+                        var res = ajax.responseText;
+                        if(res !== "no"){document.getElementById('containerToReplace').innerHTML = res;
+                            mayIStopChecking = true;}
+
+                    }
+                };
+                ajax.open('GET', url, true);
+                ajax.send();
+            }
+        </script>
         </body>
     </html>

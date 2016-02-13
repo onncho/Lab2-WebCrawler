@@ -1,0 +1,284 @@
+<html>
+<head>
+    <title>Web Crawler</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="/rocket.png"/>
+
+    <style type="text/css">
+        body {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 5%;
+            margin-top: 5%;
+            margin-bottom: 3%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #5cb85c;
+            position: fixed;
+            margin-left: -10%;
+            margin-top: -5%;
+            width: 100%;
+            background: #eee;
+            height: 60px;
+        }
+
+        h2 {
+            color: #337ab7;
+        }
+
+        p {
+            color: #333333;
+            font-family: ‘Courier New’, Courier, monospace;
+            font-size: 15px;
+        }
+
+        a {
+            color: #337ab7;
+        }
+
+        img {
+            width: 15%;
+            height: 15%;
+            margin: 1%;
+        }
+
+        hr {
+            border-color: #337ab7;
+        }
+
+        .form-style {
+            margin:10px auto;
+            max-width: 400px;
+            padding: 20px 12px 10px 20px;
+            font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        }
+        .form-style li {
+            padding: 0;
+            display: block;
+            list-style: none;
+            margin: 10px 0 0 0;
+        }
+        .form-style label{
+            margin:0 0 3px 0;
+            padding:0px;
+            display:block;
+            font-weight: bold;
+        }
+        .form-style input[type=text],
+        textarea {
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            border:1px solid #BEBEBE;
+            padding: 7px;
+            margin:0px;
+            -webkit-transition: all 0.30s ease-in-out;
+            -moz-transition: all 0.30s ease-in-out;
+            -ms-transition: all 0.30s ease-in-out;
+            -o-transition: all 0.30s ease-in-out;
+            outline: none;
+        }
+
+        .form-style input[type=text]:focus,
+        .form-style textarea:focus {
+            -moz-box-shadow: 0 0 8px #88D5E9;
+            -webkit-box-shadow: 0 0 8px #88D5E9;
+            box-shadow: 0 0 8px #88D5E9;
+            border: 1px solid #88D5E9;
+        }
+        .form-style .field-divided{
+            width: 50%;
+        }
+
+        .form-style .field-long{
+            width: 100%;
+        }
+
+        .form-style input[type=submit] {
+            background: #337ab7;
+            padding: 8px 15px 8px 15px;
+            border: none;
+            color: #fff;
+        }
+        .form-style input[type=submit]:hover {
+            background: #4691A4;
+            box-shadow:none;
+            -moz-box-shadow:none;
+            -webkit-box-shadow:none;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container" id = "containerToReplace">
+
+    <table>
+        <tr class = "statRow" id = "1">
+            <td class="title">
+                robots.txt
+            </td>
+            <td class = "value" >
+                #_ROBOTS_#
+            </td>
+        </tr>
+
+        <!-- images data -->
+        <tr class = "statRow" id = "2">
+            <td class="title">
+                number of images
+            </td>
+            <td class = "value" >
+                #_AMOUNT$IMAGES_#
+            </td>
+        </tr>
+
+
+        <tr class = "statRow" id = "3">
+            <td class="title">
+                Total size of images
+            </td>
+            <td class = "value" >
+                #_SIZE$IMAGES_#
+            </td>
+        </tr>
+
+        <!-- /images data -->
+
+        <!-- videos data -->
+
+        <tr class = "statRow" id = "4">
+            <td class="title">
+                Number of videos
+            </td>
+            <td class = "value" >
+                #_AMOUNT$VIDEOS_#
+            </td>
+        </tr>
+
+        <tr class = "statRow" id = "5">
+            <td class="title">
+                Total size of videos
+            </td>
+            <td class = "value" >
+                #_SIZE$VIDEOS_#
+            </td>
+        </tr>
+
+        <!-- /videos data -->
+
+
+        <!-- doc data -->
+        <tr class = "statRow" id = "6">
+            <td class="title">
+                Number of documents
+            </td>
+            <td class = "value" >
+                #_AMOUNT$DOCUMENTS_#
+            </td>
+        </tr>
+
+        <tr class = "statRow" id = "7">
+            <td class="title">
+                Total size of documents
+            </td>
+            <td class = "value" >
+                #_SIZE$DOCUMENTS_#
+            </td>
+        </tr>
+        <!-- /doc data -->
+
+
+        <!-- pages data -->
+        <tr class = "statRow" id = "8">
+            <td class="title">
+                Number of pages
+            </td>
+            <td class = "value" >
+                #_AMOUNT$PAGES_#
+            </td>
+        </tr>
+
+        <tr class = "statRow" id = "9">
+            <td class="title">
+                Total size of documents
+            </td>
+            <td class = "value" >
+                #_SIZE$PAGES_#
+            </td>
+        </tr>
+        <!-- /pages data -->
+
+        <!-- external / internal links data -->
+
+        <tr class = "statRow" id = "10">
+            <td class="title">
+                Number of internal links
+            </td>
+            <td class = "value" >
+                #_AMOUNT$INTERNAL_#
+            </td>
+        </tr>
+
+        <tr class = "statRow" id = "11">
+            <td class="title">
+                Number of external links
+            </td>
+            <td class = "value" >
+                #_AMOUNT$EXTERNAL_#
+            </td>
+        </tr>
+        <!-- / links data -->
+
+        <!-- domain data -->
+        <tr class = "statRow" id = "12">
+            <td class="title">
+                Number of domains connected to
+            </td>
+            <td class = "value" >
+                #_AMOUNT$DOM$CONNECTED_#
+            </td>
+        </tr>
+
+        <tr class = "statRow" id = "13">
+            <td class="title">
+                Domains connected
+            </td>
+            <td class = "value" >
+                #_CRAWLED$DOMS$REPORTS_#
+            </td>
+        </tr>
+
+        <!-- /domain data -->
+
+        <!-- ports data -->
+
+        <tr class = "statRow" id = "14">
+            <td class="title">
+                Open Ports
+            </td>
+            <td class = "value" >
+                #_PORTS$OPEN_#
+            </td>
+        </tr>
+
+        <!-- /ports data -->
+
+    </table>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+Downloader starts downloading URL: http://smallbasic.com
+Downloader ends downloading URL: http://smallbasic.com
+200 :: href -> http://www.microsoft.com/en-us/download/details.aspx?id=46392 from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://www.microsoft.com/en-us/download/details.aspx?id=46392 from pageAddress -> http://smallbasic.com
+200 :: href -> http://www.microsoft.com/en-us/download/details.aspx?id=46392 from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://www.microsoft.com/en-us/download/details.aspx?id=46392 from pageAddress -> http://smallbasic.com
+check if this -> http://www.microsoft.com/en-us/download/details.aspx?id=46392 is internal
+href -> http://www.microsoft.com/en-us/download/details.aspx?id=46392 was found as external :( -1
+200 :: href -> http://smallbasic.com/program/?pmt149 from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://smallbasic.com/program/?pmt149 from pageAddress -> http://smallbasic.com
+200 :: href -> http://smallbasic.com/program/?pmt149 from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://smallbasic.com/program/?pmt149 from pageAddress -> http://smallbasic.com
+check if this -> http://smallbasic.com/program/?pmt149 is internal
+href -> http://smallbasic.com/program/?pmt149 was found as internal :) 0
+200 :: href -> http://smallbasic.com/program/?soko from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://smallbasic.com/program/?soko from pageAddress -> http://smallbasic.com
+200 :: href -> http://smallbasic.com/program/?soko from pageAddress -> http://smallbasic.com
+202 :: href passed --> http://smallbasic.com/program/?soko from pageAddress -> http://smallbasic.com
+check if this -> http://smallbasic.com/program/?soko is internal
+href -> http://smallbasic.com/program/?soko was found as internal :) 0
+200 :: href -> img/downloadbutton2.png from pageAddress -> http://smallbasic.com
+202 :: href passed --> img/downloadbutton2.png from pageAddress -> http://smallbasic.com
+200 :: href -> img/welcomebanner.jpg from pageAddress -> http://smallbasic.com
+202 :: href passed --> img/welcomebanner.jpg from pageAddress -> http://smallbasic.com
+200 :: href -> img/program1.png from pageAddress -> http://smallbasic.com
+202 :: href passed --> img/program1.png from pageAddress -> http://smallbasic.com
+200 :: href -> img/program2.png from pageAddress -> http://smallbasic.com
+202 :: href passed --> img/program2.png from pageAddress -> http://smallbasic.com
+java.net.SocketTimeoutException: Read timed outwas null... = smallbasic.com/img/program2.png
+
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(Unknown Source)
+	at java.net.SocketInputStream.read(Unknown Source)
+	at java.net.SocketInputStream.read(Unknown Source)
+	at sun.nio.cs.StreamDecoder.readBytes(Unknown Source)
+	at sun.nio.cs.StreamDecoder.implRead(Unknown Source)
+	at sun.nio.cs.StreamDecoder.read(Unknown Source)
+	at java.io.InputStreamReader.read(Unknown Source)
+	at java.io.BufferedReader.fill(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at java.io.BufferedReader.readLine(Unknown Source)
+	at HTTPQuery.sendHttpRequest(HTTPQuery.java:79)
+	at HTTPQuery.sendHttpHeadRequest(HTTPQuery.java:226)
+	at AnalyzerTask.tryInsertToDB(AnalyzerTask.java:411)
+	at AnalyzerTask.fetchAllFromList(AnalyzerTask.java:398)
+	at AnalyzerTask.addToDomainReport(AnalyzerTask.java:371)
+	at AnalyzerTask.run(AnalyzerTask.java:66)
+	at WorkerT.run(WorkerT.java:21)
+java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Unknown Source)
+	at java.lang.Integer.parseInt(Unknown Source)
+	at AnalyzerTask.tryInsertToDB(AnalyzerTask.java:431)
+	at AnalyzerTask.fetchAllFromList(AnalyzerTask.java:398)
+	at AnalyzerTask.addToDomainReport(AnalyzerTask.java:371)
+	at AnalyzerTask.run(AnalyzerTask.java:66)
+	at WorkerT.run(WorkerT.java:21)
+---
+exception trace back inside HTTPQuery.getContentLengthFromResponse(null)
+java.lang.NullPointerException
+---
+Crawling needs to finish
+Field name: m_Domain, Field value: http://smallbasic.com
+Field name: m_ConnectedDomains, Field value: []
+Field name: m_NumOfDocuments, Field value: 0
+Field name: m_SizeOfDocuments, Field value: 0
+Field name: m_NumOfPages, Field value: 0
+Field name: m_SizeOfPages, Field value: 0
+Field name: m_NumOfImages, Field value: 1
+Field name: m_SizeOfImages, Field value: 0
+Field name: m_NumOfVideos, Field value: 0
+Field name: m_SizeOfVideos, Field value: 0
+Field name: m_NumInternalLinks, Field value: 0
+Field name: m_NumExternalLinks, Field value: 0
+Field name: isDisrespectRobot, Field value: false
+Field name: ports, Field value: null
+Field name: dateTime, Field value: null
+Field name: sumRTT, Field value: 0
+Field name: numRTT, Field value: 0
