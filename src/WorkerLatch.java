@@ -1,3 +1,4 @@
+
 public class WorkerLatch {
 
 	private static WorkerLatch instance = new WorkerLatch();
@@ -23,6 +24,8 @@ public class WorkerLatch {
 		try {
 			CrawlerControler.getInstance().print();
 			CrawlerControler.getInstance().saveReport();
+			//State stop = State.STOPPING;
+			//CrawlerControler.getInstance().changeState(State.STOPPING);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

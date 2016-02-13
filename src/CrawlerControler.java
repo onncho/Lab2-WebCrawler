@@ -84,6 +84,14 @@ public class CrawlerControler {
 		}
 	}
 
+	public void changeState(State state) {
+		m_CrawlerState = state;
+	}
+	
+	public State getState() {
+		return m_CrawlerState;
+	}
+	
 	public void print() throws IllegalArgumentException, IllegalAccessException {
 		m_ReportPerDomain.Print();
 	}
