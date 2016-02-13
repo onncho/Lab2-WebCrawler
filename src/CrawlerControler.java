@@ -50,13 +50,13 @@ public class CrawlerControler {
 	}
 
 	// start crawling
-	public synchronized void startCrawling(final String domain, final boolean shouldFullTcp, 
-			final boolean shouldDisrespectRobot) {
+	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
+			 boolean shouldDisrespectRobot) {
 		Date date = new Date();
 		m_timeAndDate = date.toString();
 		
 
-		DownloaderTask task = new DownloaderTask("http://smallbasic.com");
+		DownloaderTask task = new DownloaderTask(domain);
 		m_CrawlerState  = State.RUNNING;
 		addTaskToDownloaderQueue(task);
 	}
@@ -203,8 +203,8 @@ public void saveReport(){
 			
 			
 			/// Finished reading and inserting data ///
-			
-			String fileName = (m_ReportPerDomain.getDomain().replaceAll("\\.", "_") + ".html");
+			String domain = m_ReportPerDomain.getDomain().replaceAll("/", "");
+			String fileName = (domain.replaceAll("\\.", "_") + ".html");
 			File report = new File(pathToRoot + fileName);
 			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
 			writer.print(htmlTemplate);

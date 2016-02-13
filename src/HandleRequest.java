@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
 
+
+
 public class HandleRequest implements Runnable {
 
 	private final Socket m_Connection;
@@ -138,16 +140,32 @@ public class HandleRequest implements Runnable {
 		
 		if(!checkForCrawler(req)){
 			
-			/*if(req.m_RequestedPage.equals("getCrawlerReport.html")){
-				
-			}*/
-			// user did not asked for crawler or requested domain coudln't be found under params, there for going 
-			// normal process
+			if(req.m_RequestedPage.equals("/")){
+				if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+					//working
+					int indexOfRoot = i_fullRequest.indexOf("/");
+					String newRequest = "";
+					if(indexOfRoot > -1){
+						newRequest = i_fullRequest.substring(0,indexOfRoot) + "/Running.html" + i_fullRequest.substring(indexOfRoot + 1);
+						req = new HTTPRequest(newRequest, msgBody, contentLength);
+						res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+						return res;
+					}
+					
+				}
+				/*else if(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.WAITING)){
+					//waiting
+				}*/
+		
+			}
 			res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
+			return res;
 			
 		} else {
 			// starting crawling and there for need to hold the entire flow until when the crawler will finish
-			res = crawlerFlow(req);
+			 
+			 res = crawlerFlow(req); 
+					// new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
 		}
 		return res;
 	}
@@ -174,7 +192,7 @@ public class HandleRequest implements Runnable {
 		if (checkForPorts) {
 			doPortScan();
 		}
-		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt);
+		return doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, req);
 
 	}
 	
@@ -182,10 +200,19 @@ public class HandleRequest implements Runnable {
 		CrawlerControler.getInstance().startPortScanner();
 	}
 
-	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt) {
+	private HTTPResponse doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HTTPRequest req) {
 		// TODO init crawler
+	HTTPResponse res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
-		return null;
+		while(!CrawlerControler.getInstance().getState().equals(CrawlerControler.State.STOPPING)){
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
 	}
 
 	private void writeChunkData(File file, DataOutputStream writer){
