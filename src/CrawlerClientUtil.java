@@ -64,7 +64,10 @@ public class CrawlerClientUtil {
 		return js;
 	}
 	
-	private static String replaceCrawlerFormInIndexHtml(String html){
+
+
+	public static String replaceCrawlerFormInIndexHtml(String html){
+
 		String findInHtml = "<form id = 'crawlerForm' method = 'POST' action = '/execResult.html'>";
 		String whereToStop = "</form>";
 		
