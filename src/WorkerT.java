@@ -27,4 +27,8 @@ public class WorkerT extends Thread {
 			}
 		}
 	}
+	
+	public int getQueueSize() {
+		return m_tasks.getCapacity();
+	}
 }
