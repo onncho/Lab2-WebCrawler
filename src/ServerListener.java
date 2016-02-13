@@ -9,7 +9,6 @@ public class ServerListener {
 	private ThreadPool m_threadPool;
 	
 	//Lab2
-	private DownloaderThreadPool m_tPool;
 	//private DownloaderThreadPool m_tPool;
 	
 	public ServerListener(ThreadPool i_ThreadPool)
