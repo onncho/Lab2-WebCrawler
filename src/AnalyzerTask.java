@@ -173,14 +173,15 @@ public class AnalyzerTask implements Runnable {
 			System.out.println("href -> " + href + " was found as internal :) 1");
 			return true;
 		}
-		System.out.println("href -> " + href + " was found as external :( -2");
-		return false;
+		System.out.println("href -> " + href + " was found as internal :) -2");
+		return true;
 	}
 	
 	// fix links for future use
 	private String attachAbsoluteUrlToLink(String href){
+		if(isUrlInternal(href)){return href;}
 		if(href == null) {return null;}
-		String absoluteURL = "";
+		String absoluteURL = href;
 		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
 		int indexOfSolamitInLink = href.indexOf("#");
 		System.out.println("202 :: href passed --> " + href + " from pageAddress -> " + m_pageAddress);

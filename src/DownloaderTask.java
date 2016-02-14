@@ -32,6 +32,9 @@ public class DownloaderTask implements Runnable {
 						m_PageSizeAndType = m_QuerySite.getContentLengthFromResponse(m_DownloadedHtmlWithBody[0]);
 
 						//put in analyzerqueue
+						
+						CrawlerControler.getInstance().addNumOfInternalLinks();
+						CrawlerControler.getInstance().sumSizeOfPages(Integer.parseInt(m_PageSizeAndType));
 						m_AnalyzerTask = new AnalyzerTask(body, m_UrlToDownload);
 						CrawlerControler.getInstance().addTaskToAnalyzerQueue(m_AnalyzerTask);
 						System.out.println("************ ADD TASK TO ANALYZER *************");
