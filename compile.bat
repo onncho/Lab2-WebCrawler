@@ -1,2 +1,2 @@
-javac -d . Sources\*.java
+javac -d . src\*.java
 

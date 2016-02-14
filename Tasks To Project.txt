@@ -1,0 +1,34 @@
+tasks: 
+
+## Build The HTML's as requested: 
+	# Run ALl Old Repoerts
+	# add home button
+
+## fix statiscits: 
+	# collect connected domains
+	# if we crawl links before in which report
+	# number of pages
+	# ERROR in URI - Debug
+	# openports
+
+## Robots.txt
+
+## Crawler UI -  
+	# validation of the domain input
+
+## html :
+	#	referrer - facebook
+	#	not crashed
+
+## RTT Time
+
+
+
+Downloader -> Get -> Save HTML -> TO-Analyze
+Analyze -> pick HTML -> parse links and store in data structure (with external \ internal) -> Iterate on all the data structure and Send Head Request to get Size -> Create Link Object (size page, size images\videos\files, http type, address)
+
+
+
+
+
+

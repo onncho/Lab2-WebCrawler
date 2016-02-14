@@ -1,1 +1,1 @@
-java webserver.WebServer
+java WebServer
