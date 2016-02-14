@@ -47,19 +47,26 @@ public class HTTPQuery {
 		String response = "";
 		boolean fetchContent = requestType.equals("GET");
 		try {
+			String host = Utils.GetDomain(target);
+			host = host.isEmpty() ? CrawlerControler.getInstance().getDomain() : host;
 			if(!target.startsWith("http")){
 				target = "http://" + target;
 			}
 			URI uri = new URI(target);
 
-			String host = uri.getHost();
+			//String host = uri.getHost();
+
 			String path = uri.getPath();
 			path = path.equals("") ? "/" : path;
 
 			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
 			String headers = "Host: " + host;
+			if (host.startsWith("http://")) {
+				host = host.substring(host.indexOf(("http://")) + 7);
+			}
 
-			Socket socket = new Socket(InetAddress.getByName(host), 80);
+			Socket socket = new Socket(host, 80);
+			//Socket socket = new Socket(InetAddress.getByName(host), 80);
 			socket.setSoTimeout(6000);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 

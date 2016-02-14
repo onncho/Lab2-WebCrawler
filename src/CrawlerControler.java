@@ -89,6 +89,10 @@ public class CrawlerControler {
 		addTaskToDownloaderQueue(task);
 	}
 	
+	public String getDomain() {
+		return m_ReportPerDomain.getDomain();
+	}
+	
 	public boolean isLinkCheck(String link) {
 		boolean isChecked = false;
 		if (m_ReportPerDomain.GetAllCheckedLinks().contains(link)) {
