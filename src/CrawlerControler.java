@@ -61,6 +61,7 @@ public class CrawlerControler {
 		Date date = new Date();
 		m_timeAndDate = date.toString();
 		m_ReportPerDomain = new ReportPerDomain(domain);
+		CrawlerDB.getInstance().initConnectedDomainList(domain);
 
 		if(shouldFullTcp) {
 			m_PortscannerRunning = true;
@@ -174,15 +175,20 @@ public class CrawlerControler {
 	public void addPorts(ArrayList<Integer> ports) {
 		m_ReportPerDomain.addPorts(ports);
 	}
+	
+	public synchronized void addConnectedDomain(String connectedDomain){
+		m_ReportPerDomain.addConnectedDomains(connectedDomain);
+	}
 
 	// Stops and initiate threads for new run
-	public void killThreadPool() {
+	/*public void killThreadPool() {
 		m_DownloaderPool.stopWorker();
 		m_AnalyzerPool.stopWorker();
-	}
+	}*/
 
 	public synchronized String[] saveReport(){
 		String fileName = "";
+		String local_domain = m_ReportPerDomain.getDomain();
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
 		String htmlTemplate = "";
@@ -241,6 +247,7 @@ public class CrawlerControler {
 			reader.close();
 
 			/// Finished reading and inserting data ///
+			
 			String domain = m_ReportPerDomain.getDomain().replaceAll("/", "");
 			domain = domain.replace("http:", "_");
 			domain = domain.replaceAll(":", "_");
@@ -257,9 +264,10 @@ public class CrawlerControler {
 			e.printStackTrace();
 		}
 
-		String[] pathAndBody = new String[2];
+		String[] pathAndBody = new String[3];
 		pathAndBody[0] = "\\reports\\" + fileName;
 		pathAndBody[1] = htmlTemplate;
+		pathAndBody[2] = local_domain;
 		return pathAndBody;
 	}
 }

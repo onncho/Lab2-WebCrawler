@@ -28,7 +28,7 @@ public class WorkerLatch {
 		try {
 			CrawlerControler.getInstance().print();
 			CrawlerControler.getInstance().changeState(CrawlerControler.State.STOPPING);
-			CrawlerControler.getInstance().killThreadPool();
+			//CrawlerControler.getInstance().killThreadPool();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

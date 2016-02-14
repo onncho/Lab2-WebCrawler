@@ -25,6 +25,9 @@ public class AnalyzerTask implements Runnable {
 
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
 		System.out.println("Analyzer constructed with " + i_pageAddress);
+		if(i_pageAddress.equals("http://www.freebsd.org/./donations/donors.html")){
+			System.out.println("lkl");
+		}
 		
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_htmlSourceCode = m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", " 	");
@@ -87,9 +90,11 @@ public class AnalyzerTask implements Runnable {
 				} else {
 					// TODO - Handle external links statistics
 					addIfNotExist(match, m_externalAnchors);
+					CrawlerDB.getInstance().addConnectedDomain(CrawlerControler.getInstance().getDomain(), Utils.GetDomain(match));
+					CrawlerControler.getInstance().addConnectedDomain(Utils.GetDomain(match));
 				}
 			}
-		}
+		} 
 	}
 	
 	private boolean addIfNotExist(String link, LinkedList<String> listToAddLink) {
@@ -416,8 +421,9 @@ public class AnalyzerTask implements Runnable {
 						}
 						len = query.getContentLengthFromResponse(response);
 					} catch (ArrayIndexOutOfBoundsException error) {
-						response = query.sendHttpHeadRequestV2(url);
+						response = query.sendHttpGETRequestAndInterceptBeforeBody(url);
 						len = query.getContentLengthFromResponse(response);
+						len = len == null || len.isEmpty() ? "0" : len;
 					}
 				}
 				// TODO: Some HEAD request don't provide Content-Length to their response
@@ -447,6 +453,9 @@ public class AnalyzerTask implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("failed send heads request -> link " + url);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("*********** NumberFormatException ************* --> " + url);
 			}
 		}
 	}

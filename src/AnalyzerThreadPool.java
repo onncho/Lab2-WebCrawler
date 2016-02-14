@@ -20,7 +20,7 @@ public class AnalyzerThreadPool {
 		}
 	}
 	
-	public void stopWorker() {
+	/*public void stopWorker() {
 		for (WorkerT thread : m_WorkersThreads) {
 			thread.interrupt();
 		}
@@ -28,7 +28,7 @@ public class AnalyzerThreadPool {
 		m_AnalyzerQueue.clear();
 		createWorkers();
 	}
-	
+	*/
 	// add task in Analyzer queue
 	public void putTaskInAnalyzerQueue(Runnable task) {
 		synchronized (m_AnalyzerQueue) {

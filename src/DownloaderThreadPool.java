@@ -22,14 +22,14 @@ public class DownloaderThreadPool {
 		}
 	}
 
-	public void stopWorker() {
+	/*public void stopWorker() {
 		for (WorkerT thread : m_WorkersThreads) {
 			thread.interrupt();
 		}
 		m_WorkersThreads = null;
 		m_DownloaderQueue.clear();
 		createWorkers();
-	}
+	}*/
 
 	// add task in Analyzer queue
 	public void putTaskInDownloaderQueue(Runnable task) {

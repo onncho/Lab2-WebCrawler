@@ -46,12 +46,20 @@ public class HTTPQuery {
 			host = host.isEmpty() ? CrawlerControler.getInstance().getDomain() : host;
 			String path = target.contains(host) ? target.substring(target.indexOf(host) + host.length()) : target;
 			path = path.equals("") ? "/" : path;
-			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
-			String headers = "Host: " + host;
 
 			if (host.startsWith("http://")) {
 				host = host.substring(host.indexOf(("http://")) + 7);
 			}
+			if(host.indexOf(("%2F")) > -1){
+				host = host.substring(0 , host.indexOf("%2F"));
+			}
+			if(host.startsWith("http://")){
+				host = "http://" + host.substring("http://".length()).replaceAll("//", "/");
+			} else {
+				host = host.replaceAll("//", "/");
+			}
+			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
+			String headers = "Host: " + host;
 
 			Socket socket = new Socket(host, 80);
 			socket.setSoTimeout(6000);
@@ -179,14 +187,34 @@ public class HTTPQuery {
 			if(!target.startsWith("http")){
 				target = "http://" + target;
 			}
+			
+			String host = Utils.GetDomain(target); 
+			host = host.isEmpty() ? CrawlerControler.getInstance().getDomain() : host;
+			String path = target.contains(host) ? target.substring(target.indexOf(host) + host.length()) : target;
+			path = path.equals("") ? "/" : path;
+
+			if (host.startsWith("http://")) {
+				host = host.substring(host.indexOf(("http://")) + 7);
+			}
+			if(host.indexOf(("%2F")) > -1){
+				host = host.substring(0 , host.indexOf("%2F"));
+			}
+			if(host.startsWith("http://")){
+				host = "http://" + host.substring("http://".length()).replaceAll("//", "/");
+			} else {
+				host = host.replaceAll("//", "/");
+			}
+			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
+			String headers = "Host: " + host;
+/*
 			URI uri = new URI(target);
 
 			String host = uri.getHost();
-			String path = uri.getPath();
+			String path = uri.getPath();*/
 			path = path.equals("") ? "/" : path;
 
-			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
-			String headers = "Host: " + host;
+			requestLine = requestType + " " + path + " " + "HTTP/1.0";
+			headers = "Host: " + host;
 
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
 			socket.setSoTimeout(6000);
@@ -219,8 +247,6 @@ public class HTTPQuery {
 			e.printStackTrace();
 			throw new UnknownHostException();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 

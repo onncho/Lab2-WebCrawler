@@ -1,3 +1,4 @@
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -152,10 +153,22 @@ public class ReportPerDomain {
 	public int getNumOfConnectedDomains(){
 		return m_ConnectedDomains.size();
 	}
+	public void addConnectedDomains(String connectedDomain){
+		if(!m_ConnectedDomains.contains(connectedDomain)){
+			m_ConnectedDomains.add(connectedDomain);
+		}
+	}
+	
 	public String getFileNamesOfConnectedDomains(){
 		String tableCol = "";
-		for (String reportFileNameName : m_ConnectedDomains) {
-			tableCol += "<a href ='/" + reportFileNameName + "'>FILE HARTA BARTA</a></br>"; 
+
+		LinkedList<String[]> reports = CrawlerDB.getInstance().getAllReports();
+		for (String[] strings : reports) {
+			if(m_ConnectedDomains.contains(strings[3])){
+
+				File f = new File(strings[0]);
+				tableCol+= "<a href='/reports/" + f.getName() + "'>" + f.getName() + "</a></br>";
+			}
 		}
 
 		return tableCol;

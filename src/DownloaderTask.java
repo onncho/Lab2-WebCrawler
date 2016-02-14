@@ -29,7 +29,9 @@ public class DownloaderTask implements Runnable {
 				if (flagForResponse) {
 					String body = m_DownloadedHtmlWithBody[1];
 					m_PageSizeAndType = m_QuerySite.getContentLengthFromResponse(m_DownloadedHtmlWithBody[0]);
-
+					if(m_PageSizeAndType == null){
+						m_PageSizeAndType = "0";
+					}
 					CrawlerControler.getInstance().addNumOfInternalLinks();
 					CrawlerControler.getInstance().sumSizeOfPages(Integer.parseInt(m_PageSizeAndType));
 
