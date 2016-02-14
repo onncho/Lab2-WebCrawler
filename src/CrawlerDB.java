@@ -28,6 +28,10 @@ public class CrawlerDB {
 		return m_ReportsIncludingPaths.getLast();
 	}
 	
+	public LinkedList<String[]> getAllReports() {
+		return m_ReportsIncludingPaths;
+	}
+	
 	public synchronized LinkedList<String> getDownloadedLinks() {
 		return m_DownloadLinks;
 	}
