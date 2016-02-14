@@ -34,9 +34,10 @@ public class CrawlerControler {
 	private CrawlerControler() {
 
 		// TODO: get domain get from config.ini
-		
-		m_DownloaderPool = new DownloaderThreadPool(2);
-		m_AnalyzerPool = new AnalyzerThreadPool(1);
+		int donwloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
+		int analyzers = Integer.parseInt(ConfigurationObject.getMaxAnalyzers());
+		m_DownloaderPool = new DownloaderThreadPool(donwloaders);
+		m_AnalyzerPool = new AnalyzerThreadPool(analyzers);
 		m_CrawlerState = State.WAITING;
 		m_PortscannerRunning = false;
 	}
@@ -65,6 +66,8 @@ public class CrawlerControler {
 	// start crawling
 	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
 			 boolean shouldDisrespectRobot) {
+		
+		System.out.println("ENETER TO START CRAWLER !!!!");
 		m_CrawlerState  = State.RUNNING;
 		Date date = new Date();
 		m_timeAndDate = date.toString();

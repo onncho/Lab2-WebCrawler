@@ -205,7 +205,7 @@ public class HandleRequest implements Runnable {
 			int www = domainToCrawl.indexOf("www.");
 			domainToCrawl = "http://" + domainToCrawl.substring(www);
 		}
-		
+
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
 		
 		// waiting for crawling to finish

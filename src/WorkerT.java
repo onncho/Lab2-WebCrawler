@@ -23,6 +23,7 @@ public class WorkerT extends Thread {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				WorkerLatch.getInstance().down();
 				return;
 			}
 		}
