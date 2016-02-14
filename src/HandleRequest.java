@@ -220,11 +220,12 @@ public class HandleRequest implements Runnable {
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
 		
 		// waiting for crawling to finish
-		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+		while(CrawlerControler.getInstance().CrawlerIsWorking()){
 			try {
 				Thread.currentThread().sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
+				System.out.println("sleep got interrupted");
 				e.printStackTrace();
 			}
 		}
@@ -234,7 +235,7 @@ public class HandleRequest implements Runnable {
 			CrawlerDB.getInstance().addReportAndPath(newReport); 
 			res = true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("exception in saving reprot yo");
 		}
 		
 		return res;

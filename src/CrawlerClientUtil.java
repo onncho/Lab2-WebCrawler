@@ -102,7 +102,6 @@ public class CrawlerClientUtil {
 		
 	}
 	
-	
 	//[Cloud --- ]   ---> [UI]
 	public static String getIndexHtmlAndAddRecentReportsToPage(){
 		LinkedList<String[]> lastReports = CrawlerDB.getInstance().getAllReports();
