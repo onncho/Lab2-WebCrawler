@@ -42,6 +42,7 @@ public class HTTPQuery {
 		String res[] = new String[2];
 
 		try {
+			target = target.replaceAll("\\./", "/");
 			String host = Utils.GetDomain(target); 
 			host = host.isEmpty() ? CrawlerControler.getInstance().getDomain() : host;
 			String path = target.contains(host) ? target.substring(target.indexOf(host) + host.length()) : target;

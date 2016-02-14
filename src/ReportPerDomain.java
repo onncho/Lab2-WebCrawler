@@ -164,7 +164,7 @@ public class ReportPerDomain {
 
 		LinkedList<String[]> reports = CrawlerDB.getInstance().getAllReports();
 		for (String[] strings : reports) {
-			if(m_ConnectedDomains.contains(strings[3])){
+			if(m_ConnectedDomains.contains(strings[2])){
 
 				File f = new File(strings[0]);
 				tableCol+= "<a href='/reports/" + f.getName() + "'>" + f.getName() + "</a></br>";
