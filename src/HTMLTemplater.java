@@ -9,18 +9,18 @@ public class HTMLTemplater {
 
 	private static final String _MARK_START = "<?TLP ";
 	private static final String _MARK_END = " ?>";
-	
+
 	private static int[] getIndexesOfMarks (String htmlString, int pointer){
 		int StartOfMark = htmlString.indexOf(_MARK_START, pointer);
 		int EndOfMark = htmlString.indexOf(_MARK_END, pointer);
-		
+
 		if(StartOfMark > -1 && EndOfMark > StartOfMark){
 			int[] tuple = new int[] {StartOfMark, EndOfMark};
 			return tuple;
 		}
 		return null;
 	}
-	
+
 	private static String constructString(String htmlString, HashMap<String,String> params){
 		int pointer = 0;
 		int markPositions[] = getIndexesOfMarks(htmlString, pointer);
@@ -30,30 +30,30 @@ public class HTMLTemplater {
 		if(markPositions == null){
 			return null;
 		}
-		
+
 		while(markPositions != null){
 			StartOfMark = markPositions[0];
 			EndOfMark = markPositions[1];
 			templatedHTMLtext += htmlString.substring(pointer, StartOfMark);
-			
+
 			//<?TPL _variableName ?> lineToParse = _variableName
 			String lineToParse = htmlString.substring(StartOfMark + _MARK_START.length(), EndOfMark);
-			
+
 			// _variableName --> variableName
 			String variableName = getParamNameFromLine(lineToParse);
 			String templatedString = mapVariableNameToParamString(variableName, params);
-			
+
 			if(templatedString != null){
 				templatedHTMLtext += templatedString;
 			}
 			pointer = EndOfMark + _MARK_END.length();
 			markPositions = getIndexesOfMarks(htmlString, pointer);
 		}
-		
+
 		templatedHTMLtext += htmlString.substring(pointer);
 		return templatedHTMLtext;	
 	}
-	
+
 	private static String mapVariableNameToParamString(String variableName, HashMap<String, String> params){
 		if(params.containsKey(variableName)){
 			String templatedString = " " + variableName + " = " + params.get(variableName) + " "; 
@@ -61,7 +61,7 @@ public class HTMLTemplater {
 		}
 		return null;
 	}
-	
+
 	private static String getParamNameFromLine(String variableLine){
 		int indexOfUnderScore = variableLine.indexOf('_') + 1;
 		if(indexOfUnderScore > -1){
@@ -70,7 +70,7 @@ public class HTMLTemplater {
 		}
 		return null;
 	}
-	
+
 	public static byte[] templateHTML(File file, HashMap<String,String> params){
 		try {
 			FileReader fileReader = new FileReader(file);

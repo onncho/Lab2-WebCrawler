@@ -28,9 +28,9 @@ public class PortScanner implements Runnable {
 	}
 
 	private void getIpFromHost() {
+
 		// if target is ip version 4
 		if (m_target.matches(m_RegexDefinition) == false) {		
-
 			m_target = m_target.replaceFirst(m_RegexHttp, "");
 			InetAddress address;
 

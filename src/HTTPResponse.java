@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.util.HashMap;
 
@@ -10,7 +9,6 @@ public class HTTPResponse {
 	String m_RequestType;
 	HTTPResponseCode m_ErrorsFoundInRequest;
 	HTTPResponseCode m_responseStatusCode;
-
 	int m_ContentLength; 
 	String m_ContentType;
 	String m_Response;
@@ -67,7 +65,7 @@ public class HTTPResponse {
 			}
 			else {
 				m_RequestedPage = i_HttpRequest.get("URI");
-				
+
 				if(m_RequestType.equals(HttpRequestType.HTTP_HEAD.displayName())){
 					v_fileIsExpected = false;
 				}
@@ -95,7 +93,7 @@ public class HTTPResponse {
 			m_Response += SERVERS_DEFAULT_HTTP_VERSION + _SP + m_responseStatusCode.displayName();
 			return m_Response;
 		}
-		else if(m_RequestType.equals(HttpRequestType.TRACE.displayName())){
+		else if(m_RequestType.equals(HttpRequestType.TRACE.displayName())) {
 			constructResponseCodeTrace();
 			m_Response += (SERVERS_DEFAULT_HTTP_VERSION+ _SP + m_responseStatusCode.displayName() + 
 					"\r\n" + m_ContentType + "\r\n" + 
@@ -118,7 +116,7 @@ public class HTTPResponse {
 		return m_Response;
 	}
 
-	
+
 	private void constructResponseCodeTrace() {
 
 		if (m_RequestType.equals("Other")) 
@@ -152,7 +150,6 @@ public class HTTPResponse {
 
 	}
 
-	
 	private void constructResponseCode() {
 
 		if (m_RequestType.equals("Other")) 
@@ -171,7 +168,7 @@ public class HTTPResponse {
 		}
 	}
 
-	
+
 	private boolean checkResource(String i_RequestedPage) {
 
 		String pathname = ConfigurationObject.getRoot() + i_RequestedPage;
@@ -190,17 +187,14 @@ public class HTTPResponse {
 					if(file.getName().equals("params_info.html")){
 						templatedHTML = HTMLTemplater.templateHTML(file,m_HttpRequestParams);
 						m_ContentLength = (int) templatedHTML.length;
-					} //TODO: insert the executeResult.html here?
-					
-					
-					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
+					} else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 							CrawlerControler.getInstance().CrawlerIsWorking()) {
 
 						// change home page
 						String responseBody = CrawlerClientUtil.generateHtmlIfCrawlerIsAlreadyInExecution();
 						templatedHTML = responseBody.trim().getBytes();
 						m_ContentLength = (int) responseBody.trim().getBytes().length;
-						
+
 					}
 					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 							!CrawlerControler.getInstance().CrawlerIsWorking()){
@@ -211,24 +205,17 @@ public class HTTPResponse {
 							templatedHTML = indexHTML.trim().getBytes();
 							m_ContentLength = (int) indexHTML.trim().getBytes().length;
 						}
-						
-					}
-					
-					else if (file.getName().equals("execResult.html") &&
+					} else if (file.getName().equals("execResult.html") &&
 							!CrawlerControler.getInstance().CrawlerIsWorking()) {
 						System.out.println(CrawlerDB.getInstance().getLastReportIncludingPath());
 						String responseBody = CrawlerDB.getInstance().getLastReportIncludingPath()[1];
 						System.out.println(responseBody);
 						templatedHTML = responseBody.trim().getBytes();
 						m_ContentLength = (int) templatedHTML.length;
-						
-					}
-					else {
+					} else {
 						m_ContentLength = (int) file.length();
 					}
-
-				} else if(file.getName().equals("params_info.html") && v_isChunked){
-
+				} else if (file.getName().equals("params_info.html") && v_isChunked){
 					//if for a weird reason the client want the page in chunks we still need to template it
 					templatedHTML = HTMLTemplater.templateHTML(file,m_HttpRequestParams);
 				}
@@ -284,12 +271,10 @@ public class HTTPResponse {
 	}
 
 	public String getPathToFile() {
-
-		
 		if(m_responseStatusCode.equals(HTTPResponseCode.NOT_FOUND) || m_responseStatusCode.equals(HTTPResponseCode.NOT_IMPLEMENTED) ||!this.v_fileIsExpected){
 			return null;
 		}
-		
+
 		if (m_responseStatusCode.equals(HTTPResponseCode.NOT_FOUND)) {
 			return ConfigurationObject.getRoot() + "/" + "404Error.html";
 		} else if (m_responseStatusCode.equals(HTTPResponseCode.NOT_IMPLEMENTED)) {

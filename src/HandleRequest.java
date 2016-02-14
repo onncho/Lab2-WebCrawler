@@ -8,14 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.LinkedList;
-
-import org.omg.Messaging.SyncScopeHelper;
-
-
-
-
-
 
 public class HandleRequest implements Runnable {
 
@@ -90,7 +82,6 @@ public class HandleRequest implements Runnable {
 		} 
 	}
 
-	//TODO: simply write data + response code according to the request data --> no logic
 	public void handleResponse(HTTPResponse res, Socket connection){
 		// LAB 2 --> will enter with GET /executeResult.html
 		String response = res.GenerateResponse();
@@ -107,11 +98,8 @@ public class HandleRequest implements Runnable {
 				}
 
 				// Send The File and Close Response As Http protocol request
-				// TODO: enter here also when ExecResult request and alsp HTMLTEMPLATE is none
 				if(res.getPathToFile() != null && res.fileIsExpected()){
-					File file= new File(res.getPathToFile());
-					
-					System.out.println(file.getName());//TODO: delete 
+					File file= new File(res.getPathToFile()); 
 					//serving without chunked transfer
 					if(!res.v_isChunked){
 						byte[] fileToSend;
@@ -122,7 +110,7 @@ public class HandleRequest implements Runnable {
 						else if((file.getName().equals("index.html")|| file.getName().equals("/")) && CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 							fileToSend = res.templatedHTML;
 						}
-						
+
 						else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 								!CrawlerControler.getInstance().CrawlerIsWorking()){
 							String indexHTML = CrawlerClientUtil.getIndexHtmlAndAddRecentReportsToPage();
@@ -131,10 +119,7 @@ public class HandleRequest implements Runnable {
 							} else {								
 								fileToSend = res.templatedHTML;
 							}
-							
-						}
-						
-						else if (file.getName().equals("execResult.html") && !CrawlerControler.getInstance().CrawlerIsWorking()) {
+						} else if (file.getName().equals("execResult.html") && !CrawlerControler.getInstance().CrawlerIsWorking()) {
 							System.out.println("generating ExecResult Page");
 							fileToSend = res.templatedHTML;
 						}
@@ -166,33 +151,32 @@ public class HandleRequest implements Runnable {
 	// GET execute --> CrawlerisRunning.... executeResult.html --> 
 	// Refresh --> Get --> Running - NO --> executeNEW
 	// create http request and response
-	// TODO: can't debug only works when not stopping
 	public HTTPResponse handleRequest(String i_fullRequest, String msgBody, int contentLength){
 		HTTPRequest req = new HTTPRequest(i_fullRequest, msgBody, contentLength);
 		HTTPResponse res;
-		boolean goodCrawler = false;
-		
+
 		if(checkForCrawler(req.getMap(), req.m_HttpRequestParams)){
-			 goodCrawler = crawlerFlow(req.m_HttpRequestParams, contentLength);
+			crawlerFlow(req.m_HttpRequestParams, contentLength);
 		}
-		
+
 		res = new HTTPResponse(req.m_requestHeaders, req.m_HttpRequestParams);
-	
+
 		return res;	
 	}
-	
+
 	//receive parameters for crawler
 	private boolean checkForCrawler(HashMap<String,String> reqHeaders, HashMap<String, String> reqParams) {
-		//System.out.println("175 -->" + reqParams.get("URI"));
+
 		if(reqHeaders == null){return false;}
 
 		boolean clientAsksForCrawler = reqHeaders.get("URI").equals("/execResult.html");
-		if(clientAsksForCrawler == false) {return false;}//returning false since in this case we will go for normal response
-		
+		if(clientAsksForCrawler == false) {return false;} //returning false since in this case we will go for normal response
+
 		if(!reqParams.containsKey("domainToCrawl")){
 			System.out.println("Bad input!");
 			return false;
 		}
+
 		return true;
 	}
 
@@ -205,49 +189,48 @@ public class HandleRequest implements Runnable {
 		boolean checkForPorts = checkForPortsParamExists ? reqParams.get("PortScanChecked").equals("Checked") : false;
 		boolean respectRobotsTxt = respectRobotsTxtExists ? reqParams.get("RobotsChecked").equals("Checked") : false;	
 		boolean crawlFinishedSuceessfully = doCrawl(domainToCrawl, checkForPorts, respectRobotsTxt, reqParams, contentLengthOfOriginalRequest); 
-		
+
 		return crawlFinishedSuceessfully;
 	}
 
 	private boolean doCrawl(String domainToCrawl, boolean checkForPorts, boolean respectRobotsTxt, HashMap<String,String> reqParams, int contentLengthOfOriginalRequest) {
-		// TODO init crawler
 		boolean res = false;
+
 		if(!domainToCrawl.startsWith("http://")){
 			int www = domainToCrawl.indexOf("www.");
 			domainToCrawl = "http://" + domainToCrawl.substring(www);
 		}
-		
+
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
-		
+
 		// waiting for crawling to finish
 		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 			try {
 				Thread.currentThread();
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		try {
 			String[] newReport = CrawlerControler.getInstance().saveReport();
 			CrawlerDB.getInstance().addReportAndPath(newReport); 
 			res = true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
-		
+
 		return res;
 	}
 
 	private void writeChunkData(File file, DataOutputStream writer){
-
 		try
 		{
 			FileInputStream fis = new FileInputStream(file);
 			byte[] bFile = new byte[1024];
 			int chunkSize = 0;
+
 			// read until the end of the stream.
 			while((chunkSize = fis.read(bFile)) != -1)
 			{
@@ -266,21 +249,14 @@ public class HandleRequest implements Runnable {
 			writer.writeBytes("\r\n");
 			writer.flush();
 
-		}
-
-		catch(FileNotFoundException e)
-		{
+		} catch(FileNotFoundException e) {
 			System.err.println("FileNotFound While Writing Cuncked Data");
-		} 
-		catch (IOException e) 
-		{
+		} catch (IOException e) {
 			System.err.println("ERROR: IO Exception");
 		}
 	}
 
-
 	private void writeChunkString(byte[] string, DataOutputStream writer){
-
 		try
 		{
 			ByteArrayInputStream fis = new ByteArrayInputStream(string);

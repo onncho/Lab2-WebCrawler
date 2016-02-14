@@ -13,19 +13,19 @@ public class AnalyzerTask implements Runnable {
 	LinkedList<String> m_images;
 	LinkedList<String> m_videos;
 	LinkedList<String> m_docs;
-
 	LinkedList<String> m_allowedImageExt;
 	LinkedList<String> m_allowedVideoExt;
 	LinkedList<String> m_allowedDocExt;
 
 	HTTPQuery query;
-
 	String m_htmlSourceCode;
 	URI m_uri;
 	String m_pageAddress;
 	int m_sizeAndTypeOfPage;
 
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
+		System.out.println("Analyzer constructed with " + i_pageAddress);
+		
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_htmlSourceCode = m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", " 	");
 		m_pageAddress = i_pageAddress;
@@ -51,21 +51,13 @@ public class AnalyzerTask implements Runnable {
 
 	@Override
 	public void run() {
-		//lookForAnchorsAndPopulate();
 		findAllLinks();
-		//lookForImagesAndPopulate();
 		findAllImages();
 
 		try {
 			// add to Report
 			addToDomainReport();
 			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
-//			for(int i = 0; i < m_internalAnchors.size(); i++){
-//				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.getFirst()));
-//
-//				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
-//				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
-//			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -73,9 +65,9 @@ public class AnalyzerTask implements Runnable {
 		}
 	}
 
-	private void lookForImagesAndPopulate(){
-		getAllPropertiesValueByTagAndPopulateLists("<img", "src=");
-	}
+//	private void lookForImagesAndPopulate(){
+//		getAllPropertiesValueByTagAndPopulateLists("<img", "src=");
+//	}
 	
 	public void findAllLinks() {
 		Pattern p = Pattern.compile("(href)\\s*=\\s*[\\\"\\']((http[s]?:\\/\\/\\S+)|([^\\s\\?\\'\\\"\\#\\@\\:]*))(\\#\\S*)?[\\\"\\']");
@@ -102,6 +94,7 @@ public class AnalyzerTask implements Runnable {
 	
 	private boolean addIfNotExist(String link, LinkedList<String> listToAddLink) {
 		boolean wasExisted = true;
+		
 		if (!listToAddLink.contains(link)) {
 			wasExisted = false;
 			listToAddLink.add(link);
@@ -146,15 +139,15 @@ public class AnalyzerTask implements Runnable {
 					return;
 				} 
 			}
-				
-
+	
 			System.out.println("The URL has been added as an internal link -----:: " + link);
 			addIfNotExist(link, m_internalAnchors);
 			CrawlerControler.getInstance().addTaskToDownloaderQueue(new DownloaderTask(link));
 	}
 
 	private String adjustDomainUrl(String baseUrl, String link) {
-	        if (link.startsWith("http")) {
+	        
+			if (link.startsWith("http")) {
 	            return link;
 	        }
 
@@ -178,205 +171,204 @@ public class AnalyzerTask implements Runnable {
 	        return baseUrl;
 	    }
 
-	private void lookForAnchorsAndPopulate(){
-		getAllPropertiesValueByTagAndPopulateLists("<a", "href=");
-	}
+//	private void lookForAnchorsAndPopulate(){
+//		getAllPropertiesValueByTagAndPopulateLists("<a", "href=");
+//	}
+//
+//	//String subjectTag = "<a";
+//	//String propertyToSearchFor = "href=";
+//	private void getAllPropertiesValueByTagAndPopulateLists(String subjectTag, String propertyToSearchFor){
+//
+//		int currentIndex = m_htmlSourceCode.indexOf(subjectTag);
+//
+//		// while there are still anchors from currentIndex to end of the string..
+//		while(currentIndex > -1){
+//			String link = null;
+//			char kindOfQuoteCharUsed;
+//
+//			//indexes of the link itself aka -> <a href='www.someLink.com'
+//			int linkStartIndex, linkEndIndex;
+//
+//			//inside an "<a" tag there is the "href=" property that holds the link address
+//			int hrefIndexInAnchor = m_htmlSourceCode.indexOf(propertyToSearchFor, currentIndex);
+//
+//			linkStartIndex = (hrefIndexInAnchor + propertyToSearchFor.length());
+//
+//			//can identify links with ' or " char, inorder to fecth it correctly 
+//			kindOfQuoteCharUsed = m_htmlSourceCode.charAt(linkStartIndex);
+//
+//			//pointing to the closing quote char //TODO: check why +1
+//			linkEndIndex = m_htmlSourceCode.indexOf(kindOfQuoteCharUsed, linkStartIndex + 1);
+//
+//			if(linkStartIndex > -1 && linkEndIndex > -1) {
+//				link = m_htmlSourceCode.substring(linkStartIndex, linkEndIndex);
+//				populateCorrectList(this.removeQuoteCharFromString(link));
+//			}
+//
+//			currentIndex = m_htmlSourceCode.indexOf(subjectTag, currentIndex + subjectTag.length());
+//		}
+//	}
 
-	//String subjectTag = "<a";
-	//String propertyToSearchFor = "href=";
-	private void getAllPropertiesValueByTagAndPopulateLists(String subjectTag, String propertyToSearchFor){
+//	private int populateCorrectList(String linkToMap){
+//		String ext = getExtensionFromString(linkToMap);
+//		linkToMap = attachAbsoluteUrlToLink(linkToMap);
+//		String domain = Utils.GetDomain(linkToMap);
+//		domain = domain.isEmpty() ? m_uri.getHost() : domain;
+//		System.out.println("The domain of: **" + linkToMap + "** is: " + domain);
+//		int i = ext != null ? 0 : 3; //doesn't have an extension, mapping to anchors list stright away
+//		while(i < 4) {
+//			if(i == 0){
+//				if(listContainsElement(m_allowedImageExt, ext)){
+//					m_images.push(linkToMap);
+//					break;
+//				}
+//			}
+//			else if(i == 1) {
+//				if(listContainsElement(m_allowedVideoExt, ext)){
+//					m_videos.push(linkToMap);
+//					break;
+//				}
+//			}
+//			else if(i == 2){
+//				if(listContainsElement(m_allowedDocExt, ext)){
+//					m_docs.push(linkToMap);
+//					break;
+//				}
+//			}
+//			else {
+//				populateAnchors(linkToMap, ext);
+//				break;
+//			}
+//			i++;
+//		}
+//		
+//		return i;
+//	}
 
-		int currentIndex = m_htmlSourceCode.indexOf(subjectTag);
-
-		// while there are still anchors from currentIndex to end of the string..
-		while(currentIndex > -1){
-			String link = null;
-			char kindOfQuoteCharUsed;
-
-			//indexes of the link itself aka -> <a href='www.someLink.com'
-			int linkStartIndex, linkEndIndex;
-
-			//inside an "<a" tag there is the "href=" property that holds the link address
-			int hrefIndexInAnchor = m_htmlSourceCode.indexOf(propertyToSearchFor, currentIndex);
-
-			linkStartIndex = (hrefIndexInAnchor + propertyToSearchFor.length());
-
-			//can identify links with ' or " char, inorder to fecth it correctly 
-			kindOfQuoteCharUsed = m_htmlSourceCode.charAt(linkStartIndex);
-
-			//pointing to the closing quote char //TODO: check why +1
-			linkEndIndex = m_htmlSourceCode.indexOf(kindOfQuoteCharUsed, linkStartIndex + 1);
-
-			if(linkStartIndex > -1 && linkEndIndex > -1){
-				link = m_htmlSourceCode.substring(linkStartIndex, linkEndIndex);
-				populateCorrectList(this.removeQuoteCharFromString(link));
-			}
-
-			currentIndex = m_htmlSourceCode.indexOf(subjectTag, currentIndex + subjectTag.length());
-		}
-	}
-
-	private int populateCorrectList(String linkToMap){
-		String ext = getExtensionFromString(linkToMap);
-		linkToMap = attachAbsoluteUrlToLink(linkToMap);
-		String domain = Utils.GetDomain(linkToMap);
-		domain = domain.isEmpty() ? m_uri.getHost() : domain;
-		System.out.println("The domain of: **" + linkToMap + "** is: " + domain);
-		int i = ext != null ? 0 : 3;//doesn't have an extension, mapping to anchors list stright away
-		while(i < 4) {
-			if(i == 0){
-				if(listContainsElement(m_allowedImageExt, ext)){
-					m_images.push(linkToMap);
-					break;
-				}
-			}
-			else if(i == 1) {
-				if(listContainsElement(m_allowedVideoExt, ext)){
-					m_videos.push(linkToMap);
-					break;
-				}
-			}
-			else if(i == 2){
-				if(listContainsElement(m_allowedDocExt, ext)){
-					m_docs.push(linkToMap);
-					break;
-				}
-			}
-			else {
-				populateAnchors(linkToMap, ext);
-				break;
-			}
-			i++;
-		}
-		
-		return i;
-	}
-
-
-	/**
-	 * The Link is internal or External
-	 * ASSUMING THIS METHOD WILL BE CALLED ONLY !!WITH!! attachAbsoluteUrlToLink() output as input
-	 */
-	private boolean isUrlInternal(String href){
-		System.out.println("check if this -> " + href + " is internal");
-
-		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
-			//external so false for internal
-			System.out.println("href -> " + href + " was found as external :( -1");
-			return false;
-		} 
-		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
-			//internal with http , https with or without www
-			System.out.println("href -> " + href + " was found as internal :) 0 ");
-			return true;
-		} 
-		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
-			//internal
-			System.out.println("href -> " + href + " was found as internal :) 1");
-			return true;
-		}
-		System.out.println("href -> " + href + " was found as internal :( -2");
-		return true;
-	}
+//
+//	/**
+//	 * The Link is internal or External
+//	 * ASSUMING THIS METHOD WILL BE CALLED ONLY !!WITH!! attachAbsoluteUrlToLink() output as input
+//	 */
+//	private boolean isUrlInternal(String href){
+//		
+//		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
+//			//external so false for internal
+//			System.out.println("href -> " + href + " was found as external :( -1");
+//			return false;
+//		} 
+//		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
+//			//internal with http , https with or without www
+//			System.out.println("href -> " + href + " was found as internal :) 0 ");
+//			return true;
+//		} 
+//		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
+//			//internal
+//			System.out.println("href -> " + href + " was found as internal :) 1");
+//			return true;
+//		}
+//		System.out.println("href -> " + href + " was found as internal :( -2");
+//		return true;
+//	}
 	
-	// fix links for future use
-	private String attachAbsoluteUrlToLink(String href){
-		if(href == null) {return null;}
-		String absoluteURL = href;
-		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
-		int indexOfSolamitInLink = href.indexOf("#");
-		System.out.println("202 :: href passed --> " + href + " from pageAddress -> " + m_pageAddress);
-		if(indexOfSolamitInLink == 0){
-			//throw to garbage like this job fuk it
-			return null;
-		}
-		else if(indexOfSolamitInLink > 0){
-			href = href.substring(0, indexOfSolamitInLink);
-		}
+//	// fix links for future use
+//	private String attachAbsoluteUrlToLink(String href){
+//		if(href == null) {return null;}
+//		String absoluteURL = href;
+//		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
+//		int indexOfSolamitInLink = href.indexOf("#");
+//		System.out.println("202 :: href passed --> " + href + " from pageAddress -> " + m_pageAddress);
+//		if(indexOfSolamitInLink == 0){
+//			//throw to garbage like this job fuk it
+//			return null;
+//		}
+//		else if(indexOfSolamitInLink > 0){
+//			href = href.substring(0, indexOfSolamitInLink);
+//		}
+//
+//		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
+//			//external
+//			absoluteURL = href;
+//		} 
+//		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
+//			//internal with http , https with or without www
+//			absoluteURL = href;
+//		} 
+//		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
+//			//internal
+//			if(!href.startsWith("/")){
+//				href = "/" + href;
+//			}
+//			absoluteURL = m_uri.getHost() + href;
+//		}
+//		return absoluteURL;
+//	}
+//
+//	/**
+//	 * @param link -> anchor to be added to the external or internal lists if doesn't already exists
+//	 * @return true on success
+//	 */
+//	private boolean populateAnchors(String link, String ext){
+//		//String formattedLink = attachAbsoluteUrlToLink(link); // fix link if needed
+//		String formattedLink = link;
+//		ext = (ext == null) ? "" : ext;
+//		boolean inserted = false;
+//		
+//		if (formattedLink != null) {
+//			//TODO
+//			//linkURI = new URI(formattedLink);
+//			boolean isInternal = isUrlInternal(formattedLink);
+//			//if(linkURI.getHost().equals(m_uri.getHost())){
+//			if(isInternal && (ext.equals("") || ext.equals("html"))){
+//				//m_internalAnchors.push(formattedLink);
+//				inserted = pushIfNotExists(m_internalAnchors, formattedLink);
+//			} else {
+//				inserted = pushIfNotExists(m_externalAnchors, formattedLink);
+//			}		
+//		}
+//
+//		return inserted;
+//	}
 
-		if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) == -1){
-			//external
-			absoluteURL = href;
-		} 
-		else if((href.startsWith("http://") || href.startsWith("https://")) && href.indexOf(m_uri.getHost()) > 4){
-			//internal with http , https with or without www
-			absoluteURL = href;
-		} 
-		else if((! href.startsWith("http://") && !href.startsWith("https://")) && href.indexOf("www.") == -1) {
-			//internal
-			if(!href.startsWith("/")){
-				href = "/" + href;
-			}
-			absoluteURL = m_uri.getHost() + href;
-		}
-		return absoluteURL;
-	}
-
-	/**
-	 * @param link -> anchor to be added to the external or internal lists if doesn't already exists
-	 * @return true on success
-	 */
-	private boolean populateAnchors(String link, String ext){
-		//String formattedLink = attachAbsoluteUrlToLink(link); // fix link if needed
-		String formattedLink = link;
-		ext = (ext == null) ? "" : ext;
-		boolean inserted = false;
-		
-		if (formattedLink != null) {
-			//TODO
-			//linkURI = new URI(formattedLink);
-			boolean isInternal = isUrlInternal(formattedLink);
-			//if(linkURI.getHost().equals(m_uri.getHost())){
-			if(isInternal && (ext.equals("") || ext.equals("html"))){
-				//m_internalAnchors.push(formattedLink);
-				inserted = pushIfNotExists(m_internalAnchors, formattedLink);
-			} else {
-				inserted = pushIfNotExists(m_externalAnchors, formattedLink);
-			}		
-		}
-
-		return inserted;
-	}
-
-	/**
-	 * 
-	 * @param LinkedList<String> set -> list to push element to
-	 * @param member -> string to push if not already in list
-	 * @return true if member was added , false otherwise
-	 */
-	private boolean pushIfNotExists(LinkedList<String> set, String member){
-		boolean exists = listContainsElement(set, member);
-		
-		if(!exists){
-			set.push(member);
-		}
-		
-		return !exists;
-	}
-
-	private String getExtensionFromString(String linkToMap) {
-		String ext = null;
-		int indexOfDotChar = linkToMap.lastIndexOf(".");
-		if(indexOfDotChar > -1){
-			ext = linkToMap.substring(indexOfDotChar + 1);
-		}
-		return ext;
-	}
-
-	private boolean listContainsElement(LinkedList<String> set, String member){
-		int i = 0;
-		while(i < set.size()){
-			if(set.get(i).trim().equals(member)){
-				return true;
-			}
-			i++;
-		}
-		return false;
-	}
-
-	private String removeQuoteCharFromString(String str){
-		return str.substring(1, str.length());
-	}
+//	/**
+//	 * 
+//	 * @param LinkedList<String> set -> list to push element to
+//	 * @param member -> string to push if not already in list
+//	 * @return true if member was added , false otherwise
+//	 */
+//	private boolean pushIfNotExists(LinkedList<String> set, String member){
+//		boolean exists = listContainsElement(set, member);
+//		
+//		if(!exists){
+//			set.push(member);
+//		}
+//		
+//		return !exists;
+//	}
+//
+//	private String getExtensionFromString(String linkToMap) {
+//		String ext = null;
+//		int indexOfDotChar = linkToMap.lastIndexOf(".");
+//		if(indexOfDotChar > -1){
+//			ext = linkToMap.substring(indexOfDotChar + 1);
+//		}
+//		return ext;
+//	}
+//
+//	private boolean listContainsElement(LinkedList<String> set, String member){
+//		int i = 0;
+//		while(i < set.size()){
+//			if(set.get(i).trim().equals(member)){
+//				return true;
+//			}
+//			i++;
+//		}
+//		return false;
+//	}
+//
+//	private String removeQuoteCharFromString(String str){
+//		return str.substring(1, str.length());
+//	}
 
 	private void addToDomainReport() throws IOException, Exception {
 		fetchAllFromList(m_images, 0);
@@ -407,8 +399,6 @@ public class AnalyzerTask implements Runnable {
 			CrawlerDB.getInstance().addDownloadLink(url);
 			String response = "";
 
-			// TODO: check what's happens when response with exception
-			// TODO: CHECK COMMENT ABOVE IDENTIFIER = 0
 			try {
 				String len = "";
 				if(identifier != 3){
@@ -451,7 +441,6 @@ public class AnalyzerTask implements Runnable {
 				else if (identifier == 3) {
 					CrawlerControler.getInstance().addNumOfExternalLinks();
 				}
-
 			} catch (UnknownHostException e) {
 				System.out.println("failed send heads request -> link " + url);
 				e.printStackTrace();

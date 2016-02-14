@@ -1,7 +1,6 @@
 import java.util.HashMap;
 
 public class HTTPRequest {
-
 	// GET or POST or ... 
 	HttpRequestType m_RequestType;
 	// Requested Page (/ or /index.html etc.)
@@ -22,21 +21,17 @@ public class HTTPRequest {
 	String m_httpMessageBody;
 	int m_errorCodeIfOccurred = -1;//-1 not occurred , 4 bad-request , 5 not implemented
 
-
 	public HTTPRequest(String io_originalRequest, String io_httpMessageBody, int contentLength){
 		m_originalRequest = io_originalRequest;
 		m_httpMessageBody = io_httpMessageBody;
 
 		// Parse the Raw Request and check it
 		if(!Parser.checkIfRequestIsParsable(io_originalRequest)){
-
 			m_errorCodeIfOccurred = 4;
 			this.m_requestHeaders.put("errors", this.mapErrorValueInRequestToResponseType().displayName());
 		} else {
-
 			String[] requestAsArray = Parser.SplitRequestToLinesIfAcceptable(m_originalRequest);
 			String[] requestLine = Parser.SplitRequestLineToHeadersIfAcceptable(requestAsArray[0]);
-
 
 			this.m_RequestedPage = requestLine[1];
 			this.m_HTTPver = requestLine[2];
@@ -75,7 +70,7 @@ public class HTTPRequest {
 			} else {
 				m_requestHeaders.put("originalRequest", m_originalRequest);
 			}
-			
+
 			m_requestHeaders.put("extension", "trace");
 		} else {
 			handleFileExtension();
@@ -130,7 +125,6 @@ public class HTTPRequest {
 	}
 
 	private void handleGetRequest(){
-
 		// Seperate the parmas in the request if there are many
 		if(m_RequestedPage.indexOf("?") != -1){
 			String[] pageBrokenToQuery = Parser.parseGetRequest(m_RequestedPage);
@@ -160,7 +154,7 @@ public class HTTPRequest {
 		handleGetRequest();
 	}
 
-	
+
 	public HashMap<String, String> getMap (){
 		return this.m_requestHeaders;
 	}

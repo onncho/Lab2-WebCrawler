@@ -8,7 +8,7 @@ public class WorkerT extends Thread {
 	}
 
 	public void run() {
-		
+
 		while(!Thread.currentThread().isInterrupted()) {
 
 			// try to get a task from taskQueue, if the Queue is empty wait if not take it and remove it from the queue
@@ -28,11 +28,11 @@ public class WorkerT extends Thread {
 			}
 		}
 	}
-	
+
 	public int getQueueSize() {
 		return m_tasks.getCapacity();
 	}
-	
+
 	public void clear() {
 		m_tasks.clear();
 	}

@@ -1,23 +1,18 @@
 
 public class AnalyzerThreadPool {
-
 	SynchronizedQueueLL m_AnalyzerQueue;
 	
 	// create collection of workers
 	int m_NumOfAnalyzers;
 	WorkerT[] m_WorkersThreads;
 	
-	//TODO: maybe to Add List of Links
-	
 	public AnalyzerThreadPool(int i_NumOfAnalyzers) {
 		m_NumOfAnalyzers = i_NumOfAnalyzers;
 		m_AnalyzerQueue = new SynchronizedQueueLL();
 		createWorkers();
-		
 	}
 	
 	public void createWorkers() {
-		
 		m_WorkersThreads = new WorkerT[m_NumOfAnalyzers];
 		for (WorkerT thread : m_WorkersThreads) {
 			thread = new WorkerT(m_AnalyzerQueue);
@@ -42,5 +37,4 @@ public class AnalyzerThreadPool {
 			m_AnalyzerQueue.enqueue(task);
 		}
 	}
-	
 }

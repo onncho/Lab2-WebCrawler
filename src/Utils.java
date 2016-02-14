@@ -1,5 +1,3 @@
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,11 +16,13 @@ public class Utils {
 		{
 			FileInputStream fis = new FileInputStream(file);
 			byte[] bFile = new byte[(int)file.length()];
+
 			// read until the end of the stream.
 			while(fis.available() != 0)
 			{
 				fis.read(bFile, 0, bFile.length);
 			}
+
 			fis.close();
 			return bFile;
 		}
@@ -79,16 +79,16 @@ public class Utils {
 		}
 		return confList;
 	}
-	
+
 	public static String GetDomain(String url) {
 		String toReturn = "";
 		Pattern pattern = Pattern.compile("(http[s]?):\\/\\/[.*\\@]?(www\\.|.*@)?([\\w\\-]+\\.[\\w\\-]+[\\.[\\w\\-]+]*)(\\:\\d+)?(\\S*)");
 		Matcher m = pattern.matcher(url);
+
 		if (m.find()) {
 			toReturn = "www." + m.group(3);
 		}
-	
+
 		return toReturn;
 	}
-	
 }

@@ -1,7 +1,5 @@
-
 import java.util.LinkedList;
 
-// 2 Classes that works together to construct running thread pool 
 public class ThreadPool {
 
 	private WorkerThread[] m_threads;

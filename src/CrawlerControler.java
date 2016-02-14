@@ -1,16 +1,11 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
-
-import javax.swing.event.TreeWillExpandListener;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 public class CrawlerControler {
 
@@ -19,21 +14,18 @@ public class CrawlerControler {
 	}
 
 	private static CrawlerControler instance = new CrawlerControler();
-
 	private ReportPerDomain m_ReportPerDomain;
 	private DownloaderThreadPool m_DownloaderPool;
 	private AnalyzerThreadPool m_AnalyzerPool;
 	private State m_CrawlerState;
 	private String m_timeAndDate;
 	private boolean m_PortscannerRunning;
-	
+
 	public static CrawlerControler getInstance() {
 		return instance;
 	}
 
 	private CrawlerControler() {
-
-		// TODO: get domain get from config.ini
 		int donwloaders = Integer.parseInt(ConfigurationObject.getMaxDownloaders());
 		int analyzers = Integer.parseInt(ConfigurationObject.getMaxAnalyzers());
 		m_DownloaderPool = new DownloaderThreadPool(donwloaders);
@@ -42,7 +34,6 @@ public class CrawlerControler {
 		m_PortscannerRunning = false;
 	}
 
-
 	public void addTaskToDownloaderQueue(Runnable task) {
 		m_DownloaderPool.putTaskInDownloaderQueue(task);
 	}
@@ -50,11 +41,11 @@ public class CrawlerControler {
 	public void addTaskToAnalyzerQueue(Runnable task) {
 		m_AnalyzerPool.putTaskInAnalyzerQueue(task);
 	}
-	
+
 	public void switchPortScannerStatus() {
 		m_PortscannerRunning = !m_PortscannerRunning;
 	}
-	
+
 	public boolean CrawlerIsWorking() {
 		if (this.getState() == State.RUNNING) {
 			return true;
@@ -65,34 +56,34 @@ public class CrawlerControler {
 
 	// start crawling
 	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
-			 boolean shouldDisrespectRobot) {
+			boolean shouldDisrespectRobot) {
 		m_CrawlerState  = State.RUNNING;
 		Date date = new Date();
 		m_timeAndDate = date.toString();
 		m_ReportPerDomain = new ReportPerDomain(domain);
-		
+
 		if(shouldFullTcp) {
 			m_PortscannerRunning = true;
 			startPortScanner();
 		}
-		
+
 		while(m_PortscannerRunning) {
 			try {
-				Thread.currentThread().sleep(200);
+				Thread.currentThread();
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		DownloaderTask task = new DownloaderTask(domain);
 		addTaskToDownloaderQueue(task);
 	}
-	
+
 	public String getDomain() {
 		return m_ReportPerDomain.getDomain();
 	}
-	
+
 	public boolean isLinkCheck(String link) {
 		boolean isChecked = false;
 		if (m_ReportPerDomain.GetAllCheckedLinks().contains(link)) {
@@ -100,7 +91,7 @@ public class CrawlerControler {
 		} else {
 			m_ReportPerDomain.AddCheckedLink(link);
 		}
-		
+
 		return isChecked;
 	}
 
@@ -109,8 +100,6 @@ public class CrawlerControler {
 		Thread[] scanners = new Thread[Number_Of_Downloaders];
 		int startScanPort = 0;
 		int portsPerScanner = 65535 / Number_Of_Downloaders;
-		
-
 		PortScannerLatch scannerLatch = PortScannerLatch.getInstance();
 
 		//Create threads
@@ -126,17 +115,17 @@ public class CrawlerControler {
 		for (Thread thread : scanners) {
 			thread.start();
 		}
-		
+
 	}
 
 	public void changeState(State state) {
 		m_CrawlerState = state;
 	}
-	
+
 	public State getState() {
 		return m_CrawlerState;
 	}
-	
+
 	public void print() throws IllegalArgumentException, IllegalAccessException {
 		m_ReportPerDomain.Print();
 	}
@@ -185,14 +174,14 @@ public class CrawlerControler {
 	public void addPorts(ArrayList<Integer> ports) {
 		m_ReportPerDomain.addPorts(ports);
 	}
-	
+
 	// Stops and initiate threads for new run
 	public void killThreadPool() {
 		m_DownloaderPool.stopWorker();
 		m_AnalyzerPool.stopWorker();
 	}
 
-public synchronized String[] saveReport(){
+	public synchronized String[] saveReport(){
 		String fileName = "";
 		String pathToRoot = System.getProperty("user.dir") + "//serverroot//";
 		File fileToOpen = new File(pathToRoot + "reportTemplate.txt");
@@ -201,7 +190,6 @@ public synchronized String[] saveReport(){
 			BufferedReader reader = new BufferedReader(new FileReader(fileToOpen));
 			String lineFromReader;
 			while((lineFromReader = reader.readLine()) != null){
-				//String realValueOfLine = "";
 				switch(lineFromReader.trim()){
 				case "#_ROBOTS_#":
 					htmlTemplate += m_ReportPerDomain.isDisrespectRobot;
@@ -251,8 +239,7 @@ public synchronized String[] saveReport(){
 				}
 			}
 			reader.close();
-			
-			
+
 			/// Finished reading and inserting data ///
 			String domain = m_ReportPerDomain.getDomain().replaceAll("/", "");
 			domain = domain.replace("http:", "_");
@@ -260,23 +247,19 @@ public synchronized String[] saveReport(){
 			m_timeAndDate = m_timeAndDate.replaceAll(" ", "_");
 			fileName = (domain.replaceAll("\\.", "_")+ "_"+ m_timeAndDate.replaceAll(":", "_") + ".html");
 			System.out.println("---> Report File Name: \t" + fileName);
-			
+
 			File report = new File(pathToRoot + "reports\\"+ fileName);
 			PrintWriter writer = new PrintWriter(new FileWriter(report, true));
 			writer.print(htmlTemplate);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//return "\\reports\\" +fileName;
+
 		String[] pathAndBody = new String[2];
 		pathAndBody[0] = "\\reports\\" + fileName;
 		pathAndBody[1] = htmlTemplate;
 		return pathAndBody;
 	}
-
-
 }

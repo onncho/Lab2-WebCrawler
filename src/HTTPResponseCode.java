@@ -1,5 +1,4 @@
 
-
 public enum HTTPResponseCode {
 	
 	OK("200 OK"),

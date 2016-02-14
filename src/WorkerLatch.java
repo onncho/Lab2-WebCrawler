@@ -3,14 +3,14 @@ public class WorkerLatch {
 
 	private static WorkerLatch instance = new WorkerLatch();
 	protected int counter = 0;
-	
+
 	public static WorkerLatch getInstance() {
 		return instance;
 	}
 
 	protected WorkerLatch() {
 	}
-	
+
 	public synchronized int getCounter() {
 		System.out.println(counter);
 		return counter;

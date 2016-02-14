@@ -1,4 +1,3 @@
-
 import java.util.HashMap;
 
 public class Parser {
@@ -7,26 +6,29 @@ public class Parser {
 		String[] acceptedExtensions = {".bmp", ".jpg", ".gif", ".png"};
 		int minExtLength = 4;
 		boolean imageFound = false;
-		
+
 		// if the uri length is less then 4 then it is not a file min length of extension is 4 without the file name
 		if(URI.length() > minExtLength) {
 			String tempExt = URI.substring(URI.length() - minExtLength);
-			for(int i = 0; i < acceptedExtensions.length; i++){
-				if(tempExt.equals(acceptedExtensions[i])){
+
+			for(int i = 0; i < acceptedExtensions.length; i++) {
+
+				if(tempExt.equals(acceptedExtensions[i])) {
 					imageFound = true;
 				}
 			}
 		}
+
 		return imageFound;
 	}
-	
+
 	protected static String getExtensionFromFileName(String fileName){
-		
+
 		if(fileName == null) { return null; }
-		
+
 		String extension = null;
 		int indexOfExt = fileName.indexOf(".");
-		
+
 		if(!fileName.equals("/") && indexOfExt > -1){
 			extension = fileName.substring(indexOfExt + 1);
 		} else {
@@ -35,7 +37,7 @@ public class Parser {
 		return extension;
 	}
 
-	
+
 	protected static boolean checkIfRequestIsParsable(String i_fullRequest){
 		boolean parsable = false;
 		int indexOfNewLine = i_fullRequest.indexOf("\n");
@@ -49,7 +51,7 @@ public class Parser {
 		}
 		return parsable;
 	}
-	
+
 	// check if the the request-line is acceptable , returns the the headers of the request-line splitted to spaces into array
 	// or null if it cannot
 	protected static String[] SplitRequestLineToHeadersIfAcceptable(String i_requestLine){
@@ -63,8 +65,8 @@ public class Parser {
 		}
 		return requestLineHeaders;
 	}
-	
-	
+
+
 	// check if the the request is split able and returns the the request splitted to lines in array
 	// or null if it cannot
 	protected static String[] SplitRequestToLinesIfAcceptable(String originalMessage){
@@ -74,7 +76,7 @@ public class Parser {
 		}
 		return requestSplitted;
 	}
-	
+
 	// check if the request method is accpeptable by the server, if not returns -1
 	protected static HttpRequestType checkIfMethodAcceptable(String requestMethod){
 		HttpRequestType returnValue = HttpRequestType.OTHER;
@@ -99,7 +101,7 @@ public class Parser {
 
 	protected static HashMap<String, String> breakRequestStringToHeaders(String[] requestHeaders){
 		HashMap<String, String> headers = new HashMap<>();
-		
+
 		for(int i = 1; i < requestHeaders.length; i++){
 			int indexOfSeperator = requestHeaders[i].indexOf(": ");
 			if(indexOfSeperator > -1){
@@ -112,7 +114,7 @@ public class Parser {
 		return headers;
 	}
 
-	
+
 	protected static void parsePostRequest(String messageBody, HashMap<String, String> params) {
 		if(messageBody.length() == 0){
 			params = null;
@@ -121,7 +123,7 @@ public class Parser {
 			params = handleEncodedParams(messageBody);
 		}	
 	}
-	
+
 	protected static String[] parseGetRequest(String i_URI) {
 		int indexOfSeperator = i_URI.indexOf("?");
 		if(indexOfSeperator > -1){
@@ -132,12 +134,12 @@ public class Parser {
 		}
 		return null;
 	}
-	
+
 	protected static HashMap<String, String> handleEncodedParams(String paramsEncoded){
 		String[] paramsTuples = breakEncodedParamsToTuples(paramsEncoded);
 		return extractTupleParmas(paramsTuples);
 	}
-	
+
 	private static String[] breakEncodedParamsToTuples(String paramsEncoded){
 		String[] tuples = null;
 		int paramsTupleSeperator = paramsEncoded.indexOf("&");
@@ -148,7 +150,7 @@ public class Parser {
 		}	
 		return tuples;
 	}
-	
+
 	private static HashMap<String,String> extractTupleParmas(String[] tuples){
 		HashMap<String, String> params = new HashMap<>();
 		for(int i = 0; i < tuples.length; i++){
@@ -157,19 +159,14 @@ public class Parser {
 				params.put(keyValueParams[0], keyValueParams[1]);
 			}
 		}
+
 		return params;
 	}
-	
-	
-	
+
 	private static String getCorrectPagePath(String url){
 		if(url.length() == 1 && url.indexOf("/") == 0){
 			return "/index.html";
 		}
 		return url;
 	}
-	
-	
-
-	
 }
