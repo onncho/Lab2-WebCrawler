@@ -204,11 +204,13 @@ public class HandleRequest implements Runnable {
 		CrawlerControler.getInstance().startCrawling(domainToCrawl, checkForPorts, respectRobotsTxt);
 
 		// waiting for crawling to finish
-		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
+		while(CrawlerControler.getInstance().CrawlerIsWorking()){
+
 			try {
 				Thread.currentThread();
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
+				System.out.println("sleep got interrupted");
 				e.printStackTrace();
 			}
 		}
@@ -219,6 +221,7 @@ public class HandleRequest implements Runnable {
 			res = true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("exception in saving reprot yo");
 		}
 
 		return res;

@@ -211,7 +211,7 @@
 
         <tr class = "statRow" id = "9">
             <td class="title">
-                Total size of documents
+                Total size of Pages
             </td>
             <td class = "value" >
                 #_SIZE$PAGES_#
