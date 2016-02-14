@@ -15,9 +15,7 @@ public class DownloaderTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if(!m_UrlToDownload.trim().isEmpty() || m_UrlToDownload != null){
-				if (!CrawlerDB.getInstance().linkExist(m_UrlToDownload)) {
-
+			if(!m_UrlToDownload.trim().isEmpty() || m_UrlToDownload != null) {
 					System.out.println("Downloader starts downloading URL: " +  m_UrlToDownload);
 					m_DownloadedHtmlWithBody = m_QuerySite.sendHttpGetRequest(m_UrlToDownload);
 					System.out.println("Downloader ends downloading URL: " + m_UrlToDownload);
@@ -34,11 +32,8 @@ public class DownloaderTask implements Runnable {
 						//put in analyzerqueue
 						m_AnalyzerTask = new AnalyzerTask(body, m_UrlToDownload);
 						CrawlerControler.getInstance().addTaskToAnalyzerQueue(m_AnalyzerTask);
-						System.out.println("************ ADD TASK TO ANALYZER *************");
 					}
 				}
-				System.out.println("******** No Crawling Same Domain More Then Once ********");
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	

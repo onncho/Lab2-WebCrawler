@@ -50,11 +50,10 @@ public class AnalyzerTask implements Runnable {
 
 	@Override
 	public void run() {
+		
 		lookForAnchorsAndPopulate();
 		lookForImagesAndPopulate();
 		
-		System.out.println("********* Analyzer Running *********");
-
 		try {
 			// add to Report
 			addToDomainReport();
@@ -67,7 +66,6 @@ public class AnalyzerTask implements Runnable {
 
 				DownloaderTask downloader = new DownloaderTask(internalLink);
 				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
-				System.out.println("************ ADD TASK TO Downloader *************");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
