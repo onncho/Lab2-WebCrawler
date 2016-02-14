@@ -87,7 +87,7 @@ public class AnalyzerTask implements Runnable {
 			while (match.contains("/../")) {
 				match = match.replaceAll("(/\\w+/\\.\\./)", "/");
 		    }
-			if (!CrawlerControler.getInstance().isLinkedCheck(match)) {
+			if (!CrawlerControler.getInstance().isLinkCheck(match)) {
 				String linkDomain = Utils.GetDomain(match);
 				linkDomain = linkDomain.isEmpty() ? m_uri.getHost() : linkDomain;
 				if (m_uri.getHost().equals(linkDomain)) {
@@ -120,8 +120,10 @@ public class AnalyzerTask implements Runnable {
 				if (imgMatch.charAt(0) != '/' && imgMatch.charAt(0) != 'h') {
 					imgMatch = "/" + imgMatch;
 				}
-				if (!addIfNotExist(imgMatch, m_images)) {
-					System.out.println("Image to fetch:  " + imgMatch);
+				if(!CrawlerControler.getInstance().isLinkCheck(imgMatch)){
+					if (!addIfNotExist(imgMatch, m_images)) {
+						System.out.println("Image to fetch:  " + imgMatch);
+					}
 				}
 			}
 		}
