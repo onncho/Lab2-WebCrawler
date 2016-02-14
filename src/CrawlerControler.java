@@ -73,7 +73,7 @@ public class CrawlerControler {
 		m_timeAndDate = date.toString();
 		m_ReportPerDomain = new ReportPerDomain(domain);
 		
-		if(shouldFullTcp){
+		if(shouldFullTcp) {
 			m_PortscannerRunning = true;
 			startPortScanner();
 		}
