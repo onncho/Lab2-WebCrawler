@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -12,7 +13,7 @@ import java.net.UnknownHostException;
 
 public class HTTPQuery {
 
-	final String _CRLF = "\r\n";
+	String _CRLF = "\r\n";
 
 	// read chunks data from requests
 	private String readChunksFromBufferedReader(BufferedReader reader){
@@ -55,7 +56,7 @@ public class HTTPQuery {
 			String path = uri.getPath();
 			path = path.equals("") ? "/" : path;
 
-			String requestLine = requestType + " " + path + " " + "HTTP/1.1";
+			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
 			String headers = "Host: " + host;
 
 			Socket socket = new Socket(InetAddress.getByName(host), 80);
@@ -63,17 +64,14 @@ public class HTTPQuery {
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 
 			writer.write(requestLine);
-			writer.write(_CRLF.toCharArray());
-			writer.flush();
-
+			writer.write(_CRLF);
 			writer.write(headers);
-			writer.write(_CRLF.toCharArray());
+			writer.write(_CRLF);
+
+			writer.write(_CRLF);
 			writer.flush();
 
-			writer.write(_CRLF.toCharArray());
-			writer.flush();
-
-			if(!fetchContent){
+			/*if(!fetchContent){
 				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String currentRecievedLine = reader.readLine();
 				while(currentRecievedLine != null && !currentRecievedLine.equals("")){
@@ -87,7 +85,9 @@ public class HTTPQuery {
 				reader.close();
 			} else {
 				res = readHttpResponse(socket);
-			}
+			}*/
+			
+			res = readHttpResponseFromStream(socket);
 			writer.close();
 			socket.close();
 
@@ -103,8 +103,34 @@ public class HTTPQuery {
 		return res;
 	}
 
+	
+	
+	
+	public String[] readHttpResponseFromStream(Socket socket) throws IOException{
+		String[] res = new String[2];
+		StringBuilder headers2 = new StringBuilder("");
+		StringBuilder body = new StringBuilder("");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		String line;
+		while (((line = reader.readLine()) != null) && (!line.isEmpty())) {
+			headers2.append(line + "\n");
+			//System.out.println(line);
+		}				
+
+		int i = 0;
+		while ((i = reader.read()) != -1) {
+			body.append((char)i);
+		}
+		
+		res[0] = headers2.toString();
+		res[1] = body.toString();
+		
+		reader.close();
+		return res;
+	}
+	
 	//TODO: del?
-	public String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
+	private String[] sendHttpRequest(String target, String requestType) throws IOException, UnknownHostException{
 		String res[] = new String[2];
 		String response = "";
 		boolean fetchContent = requestType.equals("GET");
@@ -170,7 +196,7 @@ public class HTTPQuery {
 		return res;
 	}
 	//TODO: check if we can make it to one method instead of 2
-	public String[] readHttpResponse(Socket connection) throws IOException{
+	private String[] readHttpResponse(Socket connection) throws IOException{
 		String ContentLengthHeader = "Content-Length: ";
 		int contentLength = -1;
 		String m_FullRequest = "";
