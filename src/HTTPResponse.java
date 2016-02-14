@@ -202,7 +202,7 @@ public class HTTPResponse {
 					}
 					else if (file.getName().equals("execResult.html") &&
 							!CrawlerControler.getInstance().CrawlerIsWorking()) {
-						//System.out.println(CrawlerDB.getInstance().getLastReportIncludingPath());
+						System.out.println(CrawlerDB.getInstance().getLastReportIncludingPath());
 						String responseBody = CrawlerDB.getInstance().getLastReportIncludingPath()[1];
 						System.out.println(responseBody);
 						templatedHTML = responseBody.trim().getBytes();

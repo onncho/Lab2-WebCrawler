@@ -97,4 +97,25 @@ public class ConfigurationObject {
 	{
 		return Integer.parseInt(m_MaxThreads);	
 	}
+	
+	public static boolean isImageExtension(String ext) {
+		for (String image : m_imageExtensions) {
+			if (ext.equals(image)) return true;
+		}
+		return false;
+	}
+	
+	public static boolean isDocumentExtension(String ext) {
+		for (String doc : m_documentExtensions) {
+			if (ext.equals(doc)) return true;
+		}
+		return false;
+	}
+	
+	public static boolean isVideoExtension(String ext) {
+		for (String vid : m_videoExtensions) {
+			if (ext.equals(vid)) return true;
+		}
+		return false;
+	}
 }

@@ -28,7 +28,6 @@ public class CrawlerDB {
 		return m_ReportsIncludingPaths.getLast();
 	}
 	
-	// to check not to crawl the same twice 
 	public synchronized LinkedList<String> getDownloadedLinks() {
 		return m_DownloadLinks;
 	}

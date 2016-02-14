@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -76,6 +78,17 @@ public class Utils {
 			}
 		}
 		return confList;
+	}
+	
+	public static String GetDomain(String url) {
+		String toReturn = "";
+		Pattern pattern = Pattern.compile("(http[s]?):\\/\\/[.*\\@]?(www\\.|.*@)?([\\w\\-]+\\.[\\w\\-]+[\\.[\\w\\-]+]*)(\\:\\d+)?(\\S*)");
+		Matcher m = pattern.matcher(url);
+		if (m.find()) {
+			toReturn = "www." + m.group(3);
+		}
+	
+		return toReturn;
 	}
 	
 }

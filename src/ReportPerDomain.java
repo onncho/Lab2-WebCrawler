@@ -4,6 +4,8 @@ import java.util.LinkedList;
 
 public class ReportPerDomain {
 	
+	private LinkedList<String> m_AllCheckedLinks;
+	
 	private String m_Domain;
 	private LinkedList<String> m_ConnectedDomains;
 	private int m_NumOfDocuments;
@@ -39,6 +41,7 @@ public class ReportPerDomain {
 		m_NumInternalLinks = 0;
 		m_NumExternalLinks = 0;
 		ports = new LinkedList<>();
+		m_AllCheckedLinks = new LinkedList<String>();
 	}
 	
 	//TODO: Debug
@@ -49,6 +52,14 @@ public class ReportPerDomain {
 		    Object value = field.get(this);
 		    System.out.printf("Field name: %s, Field value: %s%n", name, value);
 		}
+	}
+	
+	public LinkedList<String> GetAllCheckedLinks() {
+		return m_AllCheckedLinks;
+	}
+	
+	public void AddCheckedLink(String link) {
+		m_AllCheckedLinks.add(link);
 	}
 	
 	public int getNumOfDocuments(){
