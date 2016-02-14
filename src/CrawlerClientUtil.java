@@ -103,28 +103,40 @@ public class CrawlerClientUtil {
 	}
 	
 	
-	
-	public String getIndexHtmlAndAddRecentReportsToPage(){
-		LinkedList<String[]> lastReports = CrawlerDB.getInstance().getLastReportIncludingPath();
+	//[Cloud --- ]   ---> [UI]
+	public static String getIndexHtmlAndAddRecentReportsToPage(){
+		LinkedList<String[]> lastReports = CrawlerDB.getInstance().getAllReports();
+		String html = "";
 		
-		
-		File htmlFile = new File(userDir + "\\serverroot\\index.html");
+		File htmlFile = new File(System.getProperty("user.dir") + "\\serverroot\\index.html");
 		try {
+			
 			FileReader fileReader = new FileReader(htmlFile);
 			BufferedReader reader = new BufferedReader(fileReader);
 			String line;
 			
 			while((line = reader.readLine()) != null){
 				html += line;
+				if(line.trim().equals("</form>")){
+					
+					for (String[] strings : lastReports) {
+						File f = new File(strings[0]);
+						html+= "<a href='/reports/" + f.getName() + "'>" + f.getName() + "</a></br>";
+					}
+				}
+				
+				
 			}
 			reader.close();
 			
-			return replaceCrawlerFormInIndexHtml(html);
+			return html;
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	

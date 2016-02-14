@@ -41,9 +41,9 @@ public class DownloaderTask implements Runnable {
 						CrawlerControler.getInstance().addTaskToAnalyzerQueue(m_AnalyzerTask);
 						System.out.println("************ ADD TASK TO ANALYZER *************");
 					} else {						
-						System.out.println("******** No Crawling Same Domain More Then Once ********");
+						System.out.println("******** RESPONSE PROBLEM ********");
 					}
-				//}
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -204,8 +204,13 @@ public class HTTPResponse {
 					}
 					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 							!CrawlerControler.getInstance().CrawlerIsWorking()){
-						CrawlerDB.getInstance().
-						
+						String indexHTML = CrawlerClientUtil.getIndexHtmlAndAddRecentReportsToPage();
+						if(indexHTML == null){
+							m_ContentLength = (int) file.length();
+						} else {
+							templatedHTML = indexHTML.trim().getBytes();
+							m_ContentLength = (int) indexHTML.trim().getBytes().length;
+						}
 						
 					}
 					
