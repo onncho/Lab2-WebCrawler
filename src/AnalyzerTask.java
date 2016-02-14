@@ -3,6 +3,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
+import java.util.concurrent.SynchronousQueue;
 
 public class AnalyzerTask implements Runnable {
 
@@ -51,19 +52,23 @@ public class AnalyzerTask implements Runnable {
 	public void run() {
 		lookForAnchorsAndPopulate();
 		lookForImagesAndPopulate();
+		
+		System.out.println("********* Analyzer Running *********");
 
 		try {
 			// add to Report
 			addToDomainReport();
 			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
+			
 			for(int i = 0; i < m_internalAnchors.size(); i++){
-				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
+				String internalLink = m_internalAnchors.pop();
+				
+				System.out.println(String.format("Sending to downloader: %S", internalLink));
 
-				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
+				DownloaderTask downloader = new DownloaderTask(internalLink);
 				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
+				System.out.println("************ ADD TASK TO Downloader *************");
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

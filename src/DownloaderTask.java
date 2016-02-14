@@ -25,7 +25,7 @@ public class DownloaderTask implements Runnable {
 					// crawling only the 200 ok links.
 					String response = m_DownloadedHtmlWithBody[0];
 					boolean flagForResponse = response.contains("200 OK");
-
+					
 					if (flagForResponse) {
 						CrawlerDB.getInstance().addDownloadLink(m_UrlToDownload);
 						String body = m_DownloadedHtmlWithBody[1];
@@ -33,9 +33,11 @@ public class DownloaderTask implements Runnable {
 
 						//put in analyzerqueue
 						m_AnalyzerTask = new AnalyzerTask(body, m_UrlToDownload);
-						CrawlerControler.getInstance().addTaskToAnalyzerQueue(m_AnalyzerTask);				
+						CrawlerControler.getInstance().addTaskToAnalyzerQueue(m_AnalyzerTask);
+						System.out.println("************ ADD TASK TO ANALYZER *************");
 					}
 				}
+				System.out.println("******** No Crawling Same Domain More Then Once ********");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
