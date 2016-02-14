@@ -25,7 +25,7 @@ public class AnalyzerTask implements Runnable {
 
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
-		m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", "");
+		m_htmlSourceCode = m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", "");
 		m_pageAddress = i_pageAddress;
 		m_sizeAndTypeOfPage = 0;
 		query = new HTTPQuery();
@@ -57,7 +57,7 @@ public class AnalyzerTask implements Runnable {
 			addToDomainReport();
 			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
 			for(int i = 0; i < m_internalAnchors.size(); i++){
-				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.pop()));
+				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.get(i)));
 
 				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
 				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
@@ -167,14 +167,14 @@ public class AnalyzerTask implements Runnable {
 			System.out.println("href -> " + href + " was found as internal :) 1");
 			return true;
 		}
-		System.out.println("href -> " + href + " was found as external :( -2");
-		return false;
+		System.out.println("href -> " + href + " was found as interal :) -2");
+		return true;
 	}
 	
 	// fix links for future use
 	private String attachAbsoluteUrlToLink(String href){
 		if(href == null) {return null;}
-		String absoluteURL = "";
+		String absoluteURL = href;
 		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
 		int indexOfSolamitInLink = href.indexOf("#");
 		System.out.println("202 :: href passed --> " + href + " from pageAddress -> " + m_pageAddress);
@@ -219,9 +219,11 @@ public class AnalyzerTask implements Runnable {
 			boolean isInternal = isUrlInternal(formattedLink);
 			//if(linkURI.getHost().equals(m_uri.getHost())){
 			if(isInternal && (ext.equals("") || ext.equals("html"))){
+				System.out.println("INTERNAL LINK");
 				//m_internalAnchors.push(formattedLink);
 				inserted = pushIfNotExists(m_internalAnchors, formattedLink);
 			} else {
+				System.out.println("EXTERNAL");
 				inserted = pushIfNotExists(m_externalAnchors, formattedLink);
 			}		
 		}
@@ -286,7 +288,9 @@ public class AnalyzerTask implements Runnable {
 	private void fetchAllFromList(LinkedList<String> list, int listIdentifier) throws IOException, Exception {
 		for(int i = 0; i < list.size(); i++){
 			String address = list.get(i);
-			tryInsertToDB(address, listIdentifier);
+			if(!address.isEmpty()){
+				tryInsertToDB(address, listIdentifier);
+			}
 		} 
 	}
 
