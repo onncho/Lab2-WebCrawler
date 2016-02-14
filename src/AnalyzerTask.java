@@ -3,7 +3,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
-import java.util.concurrent.SynchronousQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AnalyzerTask implements Runnable {
 
@@ -26,7 +27,7 @@ public class AnalyzerTask implements Runnable {
 
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
-		m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", "");
+		m_htmlSourceCode = m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", " 	");
 		m_pageAddress = i_pageAddress;
 		m_sizeAndTypeOfPage = 0;
 		query = new HTTPQuery();
@@ -50,26 +51,23 @@ public class AnalyzerTask implements Runnable {
 
 	@Override
 	public void run() {
-		
-		lookForAnchorsAndPopulate();
-		lookForImagesAndPopulate();
-		
-		System.out.println("********* Analyzer Running *********");
+		//lookForAnchorsAndPopulate();
+		findAllLinks();
+		//lookForImagesAndPopulate();
+		findAllImages();
 
 		try {
 			// add to Report
 			addToDomainReport();
 			System.out.println("Number of link Analyzer extracted from a given URL (and the URL itself):\t" + (m_internalAnchors.size() + m_externalAnchors.size() + 1));
-			
-			for(int i = 0; i < m_internalAnchors.size(); i++){
-				String internalLink = m_internalAnchors.pop();
-				
-				System.out.println(String.format("Sending to downloader: %S", internalLink));
-
-				DownloaderTask downloader = new DownloaderTask(internalLink);
-				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
-				System.out.println("************ ADD TASK TO Downloader *************");
-			}
+//			for(int i = 0; i < m_internalAnchors.size(); i++){
+//				System.out.println(String.format("Sending to downloader: %S", m_internalAnchors.getFirst()));
+//
+//				DownloaderTask downloader = new DownloaderTask(m_internalAnchors.get(i));
+//				CrawlerControler.getInstance().addTaskToDownloaderQueue(downloader);
+//			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,6 +76,105 @@ public class AnalyzerTask implements Runnable {
 	private void lookForImagesAndPopulate(){
 		getAllPropertiesValueByTagAndPopulateLists("<img", "src=");
 	}
+	
+	public void findAllLinks() {
+		Pattern p = Pattern.compile("(href)\\s*=\\s*[\\\"\\']((http[s]?:\\/\\/\\S+)|([^\\s\\?\\'\\\"\\#\\@\\:]*))(\\#\\S*)?[\\\"\\']");
+		Matcher m = p.matcher(m_htmlSourceCode);
+		String match = "";
+		while (m.find()) {
+			match = m.group(2);
+			match = adjustDomainUrl(m_pageAddress, match);
+			while (match.contains("/../")) {
+				match = match.replaceAll("(/\\w+/\\.\\./)", "/");
+		    }
+			if (!CrawlerControler.getInstance().isLinkedCheck(match)) {
+				String linkDomain = Utils.GetDomain(match);
+				linkDomain = linkDomain.isEmpty() ? m_uri.getHost() : linkDomain;
+				if (m_uri.getHost().equals(linkDomain)) {
+					handleInternalLink(match);
+				} else {
+					// TODO - Handle external links statistics
+					addIfNotExist(match, m_externalAnchors);
+				}
+			}
+		}
+	}
+	
+	private boolean addIfNotExist(String link, LinkedList<String> listToAddLink) {
+		boolean wasExisted = true;
+		if (!listToAddLink.contains(link)) {
+			wasExisted = false;
+			listToAddLink.add(link);
+		}
+		
+		return wasExisted;
+	}
+	
+	private void findAllImages() {
+		Pattern p = Pattern.compile("<img[^>]+src ?= ?(?:\\\"|\\')(.[^\">]+?)(?=\\\"|\\')");
+		Matcher m = p.matcher(m_htmlSourceCode);
+		String imgMatch = "";
+		while (m.find()) {
+			imgMatch = m.group(1);
+			if (imgMatch != null && !imgMatch.isEmpty()) {
+				if (imgMatch.charAt(0) != '/' && imgMatch.charAt(0) != 'h') {
+					imgMatch = "/" + imgMatch;
+				}
+				if (!addIfNotExist(imgMatch, m_images)) {
+					System.out.println("Image to fetch:  " + imgMatch);
+				}
+			}
+		}
+	}
+	
+	 private void handleInternalLink(String link) {
+			int dotIndex = link.lastIndexOf(".");
+			if (dotIndex != -1) {
+				String ext = link.substring(dotIndex + 1);
+				if (ConfigurationObject.isImageExtension(ext)) {
+					addIfNotExist(link, m_images);
+					return;
+				}
+				else if (ConfigurationObject.isVideoExtension(ext)) {
+					addIfNotExist(link, m_videos);
+					return;
+				}
+				else if (ConfigurationObject.isDocumentExtension(ext)) {
+					addIfNotExist(link, m_docs);
+					return;
+				} 
+			}
+				
+
+			System.out.println("The URL has been added as an internal link -----:: " + link);
+			addIfNotExist(link, m_internalAnchors);
+			CrawlerControler.getInstance().addTaskToDownloaderQueue(new DownloaderTask(link));
+	}
+
+	private String adjustDomainUrl(String baseUrl, String link) {
+	        if (link.startsWith("http")) {
+	            return link;
+	        }
+
+	        boolean isRelative = !link.startsWith("/");
+	        if (isRelative) {
+	            int i = baseUrl.substring(8).lastIndexOf('/');
+	            if (i == -1) {
+	                baseUrl = baseUrl + "/" + link;
+	            } else {
+	                baseUrl = baseUrl.substring(0, i + 9) + link;
+	            }
+	        } else {
+	            int indexOfSlash = baseUrl.indexOf('/', 8);
+	            if (indexOfSlash == -1) {
+	                baseUrl = baseUrl + link;
+	            } else {
+	                baseUrl = baseUrl.substring(0, indexOfSlash + 1) + link;
+	            }
+	        }
+
+	        return baseUrl;
+	    }
 
 	private void lookForAnchorsAndPopulate(){
 		getAllPropertiesValueByTagAndPopulateLists("<a", "href=");
@@ -120,6 +217,9 @@ public class AnalyzerTask implements Runnable {
 	private int populateCorrectList(String linkToMap){
 		String ext = getExtensionFromString(linkToMap);
 		linkToMap = attachAbsoluteUrlToLink(linkToMap);
+		String domain = Utils.GetDomain(linkToMap);
+		domain = domain.isEmpty() ? m_uri.getHost() : domain;
+		System.out.println("The domain of: **" + linkToMap + "** is: " + domain);
 		int i = ext != null ? 0 : 3;//doesn't have an extension, mapping to anchors list stright away
 		while(i < 4) {
 			if(i == 0){
@@ -173,13 +273,12 @@ public class AnalyzerTask implements Runnable {
 			System.out.println("href -> " + href + " was found as internal :) 1");
 			return true;
 		}
-		System.out.println("href -> " + href + " was found as internal :) -2");
+		System.out.println("href -> " + href + " was found as internal :( -2");
 		return true;
 	}
 	
 	// fix links for future use
 	private String attachAbsoluteUrlToLink(String href){
-		if(isUrlInternal(href)){return href;}
 		if(href == null) {return null;}
 		String absoluteURL = href;
 		System.out.println("200 :: href -> " + href + " from pageAddress -> " + m_pageAddress);
@@ -216,7 +315,8 @@ public class AnalyzerTask implements Runnable {
 	 * @return true on success
 	 */
 	private boolean populateAnchors(String link, String ext){
-		String formattedLink = attachAbsoluteUrlToLink(link); // fix link if needed
+		//String formattedLink = attachAbsoluteUrlToLink(link); // fix link if needed
+		String formattedLink = link;
 		ext = (ext == null) ? "" : ext;
 		boolean inserted = false;
 		
@@ -293,13 +393,15 @@ public class AnalyzerTask implements Runnable {
 	private void fetchAllFromList(LinkedList<String> list, int listIdentifier) throws IOException, Exception {
 		for(int i = 0; i < list.size(); i++){
 			String address = list.get(i);
-			tryInsertToDB(address, listIdentifier);
+			if (!address.isEmpty()) {
+				tryInsertToDB(address, listIdentifier);
+			}
 		} 
 	}
 
 	private void tryInsertToDB(String url, int identifier) {
 
-		if (!CrawlerDB.getInstance().linkExist(url)  && !url.isEmpty()) {
+		if (!CrawlerDB.getInstance().linkExist(url)) {
 			CrawlerDB.getInstance().addDownloadLink(url);
 			String response = "";
 
