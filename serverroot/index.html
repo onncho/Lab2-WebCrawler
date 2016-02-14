@@ -142,7 +142,7 @@
         <!-- Horizontal line -->
         <hr>
 
-        <div class="container">
+        <div class="container" id = "con">
 
             <!-- Form containing : Sender, Receiver, Subject, Message Field, and Submit bottom. -->
             <form id = 'crawlerForm' method = 'POST' action = '/execResult.html'>
@@ -168,7 +168,7 @@
         </div>
         <script>
         var form = document.getElementById("formSubmit").onclick = function(){
-        	form.style = "position:absolute;top:-2000px;left-2000px";
+        	document.getElementById("con").style = "display:none;";
         	var to = document.getElementById("hex").innerHTML = "<h1>Crawler is running</h1>";
         	document.getElementById("crawlerForm").submit();
         };

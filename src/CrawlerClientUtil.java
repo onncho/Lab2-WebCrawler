@@ -113,15 +113,22 @@ public class CrawlerClientUtil {
 			FileReader fileReader = new FileReader(htmlFile);
 			BufferedReader reader = new BufferedReader(fileReader);
 			String line;
+			boolean formFound = false;
 			
 			while((line = reader.readLine()) != null){
 				html += line;
 				if(line.trim().equals("</form>")){
+					formFound = true;
+					}
+				if(line.trim().equals("</div>") && formFound){
+					formFound = false;
+					html += "<div class='container' id = " + "'" + "moreLimks" + "'" + ">";
 					
 					for (String[] strings : lastReports) {
 						File f = new File(strings[0]);
 						html+= "<a href='/reports/" + f.getName() + "'>" + f.getName() + "</a></br>";
 					}
+					html += "</div>";
 				}
 				
 				
