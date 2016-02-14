@@ -8,6 +8,7 @@ public class DownloaderTask implements Runnable {
 	String m_PageSizeAndType;
 
 	public DownloaderTask(String i_UrlToDownload) {
+		System.out.println("Downloader constructed + "+ i_UrlToDownload);
 		m_UrlToDownload = i_UrlToDownload;
 		m_QuerySite = new HTTPQuery();
 	}

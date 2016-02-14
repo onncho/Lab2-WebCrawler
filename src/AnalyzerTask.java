@@ -26,6 +26,8 @@ public class AnalyzerTask implements Runnable {
 	int m_sizeAndTypeOfPage;
 
 	public AnalyzerTask(String i_htmlSourceCode, String i_pageAddress) throws URISyntaxException {
+		System.out.println("Analyzer constructed with " + i_pageAddress);
+		
 		m_htmlSourceCode = i_htmlSourceCode.toLowerCase();
 		m_htmlSourceCode = m_htmlSourceCode.replaceAll("(?s)<!--(.*?)-->", " 	");
 		m_pageAddress = i_pageAddress;
