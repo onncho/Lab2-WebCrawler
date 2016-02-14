@@ -410,25 +410,26 @@ public class AnalyzerTask implements Runnable {
 			// TODO: check what's happens when response with exception
 			// TODO: CHECK COMMENT ABOVE IDENTIFIER = 0
 			try {
-				response = query.sendHttpHeadRequestV2(url);
-
 				String len = "";
-				try {
-					if(response == null){
-						System.out.println(" response for the following url -> " + url + "was null...");
-						response = query.sendHttpGETRequestAndInterceptBeforeBody(url);
-						if(response == null){
-							System.out.println("response after GETintercept still null... = " + url);
-						} else {
-							System.out.println("response was recieved fine with getIntercept -->" + response + "\n----");
-						}
-					}
-					len = query.getContentLengthFromResponse(response);
-				} catch (ArrayIndexOutOfBoundsException error) {
+				if(identifier != 3){
 					response = query.sendHttpHeadRequestV2(url);
-					len = query.getContentLengthFromResponse(response);
-				}
 
+					try {
+						if(response == null){
+							System.out.println(" response for the following url -> " + url + "was null...");
+							response = query.sendHttpGETRequestAndInterceptBeforeBody(url);
+							if(response == null){
+								System.out.println("response after GETintercept still null... = " + url);
+							} else {
+								System.out.println("response was recieved fine with getIntercept -->" + response + "\n----");
+							}
+						}
+						len = query.getContentLengthFromResponse(response);
+					} catch (ArrayIndexOutOfBoundsException error) {
+						response = query.sendHttpHeadRequestV2(url);
+						len = query.getContentLengthFromResponse(response);
+					}
+				}
 				// TODO: Some HEAD request don't provide Content-Length to their response
 				// Solution A: send GET request only for the Response String, B: ignore this.
 				// image

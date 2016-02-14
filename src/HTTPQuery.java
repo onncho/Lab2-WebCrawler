@@ -47,16 +47,18 @@ public class HTTPQuery {
 		String response = "";
 		boolean fetchContent = requestType.equals("GET");
 		try {
-			String host = Utils.GetDomain(target);
+			String host = Utils.GetDomain(target);///youtube.com/path
 			host = host.isEmpty() ? CrawlerControler.getInstance().getDomain() : host;
-			if(!target.startsWith("http")){
-				target = "http://" + target;
-			}
-			URI uri = new URI(target);
+			//if(!target.startsWith("http")){
+				//target = "http://" + target;
+			//}
+			
+			//URI uri = new URI(target);
+			
+			String path = target.contains(host) ? target.substring(target.indexOf(host) + host.length()) : target;
+			
 
-			//String host = uri.getHost();
-
-			String path = uri.getPath();
+			//String path = uri.getPath();
 			path = path.equals("") ? "/" : path;
 
 			String requestLine = requestType + " " + path + " " + "HTTP/1.0";
@@ -102,8 +104,6 @@ public class HTTPQuery {
 			e.printStackTrace();
 			throw new UnknownHostException();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 
