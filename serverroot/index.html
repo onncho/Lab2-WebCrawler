@@ -134,7 +134,7 @@
     </head>
     <body>
 
-        <div class="container">
+        <div id = "hex" class="container">
             <!-- Fixed Title -->
             <h2>Lab2 - Web Crawler</h2>
         </div>
@@ -160,11 +160,18 @@
                 </li>
 
                 <li>
-                    <input type="submit" value="Submit" />
+                    <input type="button" value="Submit" id = "formSubmit"/>
                 </li>
                 </ul>
                 </a>
             </form>
         </div>
+        <script>
+        var form = document.getElementById("formSubmit").onclick = function(){
+        	form.style = "position:absolute;top:-2000px;left-2000px";
+        	var to = document.getElementById("hex").innerHTML = "<h1>Crawler is running</h1>";
+        	document.getElementById("crawlerForm").submit();
+        };
+        </script>
     </body>
 </html>
