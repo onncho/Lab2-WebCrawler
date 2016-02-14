@@ -191,6 +191,8 @@ public class HTTPResponse {
 						templatedHTML = HTMLTemplater.templateHTML(file,m_HttpRequestParams);
 						m_ContentLength = (int) templatedHTML.length;
 					} //TODO: insert the executeResult.html here?
+					
+					
 					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
 							CrawlerControler.getInstance().CrawlerIsWorking()) {
 
@@ -200,6 +202,13 @@ public class HTTPResponse {
 						m_ContentLength = (int) responseBody.trim().getBytes().length;
 						
 					}
+					else if ((file.getName().equals("/") || file.getName().equals("index.html") || file.getName().equals("/index.html")) &&
+							!CrawlerControler.getInstance().CrawlerIsWorking()){
+						CrawlerDB.getInstance().
+						
+						
+					}
+					
 					else if (file.getName().equals("execResult.html") &&
 							!CrawlerControler.getInstance().CrawlerIsWorking()) {
 						System.out.println(CrawlerDB.getInstance().getLastReportIncludingPath());

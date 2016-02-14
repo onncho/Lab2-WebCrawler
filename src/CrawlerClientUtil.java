@@ -103,4 +103,29 @@ public class CrawlerClientUtil {
 	}
 	
 	
+	
+	public String getIndexHtmlAndAddRecentReportsToPage(){
+		LinkedList<String[]> lastReports = CrawlerDB.getInstance().getLastReportIncludingPath();
+		
+		
+		File htmlFile = new File(userDir + "\\serverroot\\index.html");
+		try {
+			FileReader fileReader = new FileReader(htmlFile);
+			BufferedReader reader = new BufferedReader(fileReader);
+			String line;
+			
+			while((line = reader.readLine()) != null){
+				html += line;
+			}
+			reader.close();
+			
+			return replaceCrawlerFormInIndexHtml(html);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
