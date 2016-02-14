@@ -298,7 +298,7 @@ public class AnalyzerTask implements Runnable {
 
 	private void tryInsertToDB(String url, int identifier) {
 
-		if (!CrawlerDB.getInstance().linkExist(url)) {
+		if (!CrawlerDB.getInstance().linkExist(url)  && !url.isEmpty()) {
 			CrawlerDB.getInstance().addDownloadLink(url);
 			String response = "";
 
