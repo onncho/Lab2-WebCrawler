@@ -66,8 +66,6 @@ public class CrawlerControler {
 	// start crawling
 	public synchronized void startCrawling( String domain,  boolean shouldFullTcp, 
 			 boolean shouldDisrespectRobot) {
-		
-		System.out.println("ENETER TO START CRAWLER !!!!");
 		m_CrawlerState  = State.RUNNING;
 		Date date = new Date();
 		m_timeAndDate = date.toString();
@@ -89,6 +87,17 @@ public class CrawlerControler {
 		
 		DownloaderTask task = new DownloaderTask(domain);
 		addTaskToDownloaderQueue(task);
+	}
+	
+	public boolean isLinkedCheck(String link) {
+		boolean isChecked = false;
+		if (m_ReportPerDomain.GetAllCheckedLinks().contains(link)) {
+			isChecked = true;
+		} else {
+			m_ReportPerDomain.AddCheckedLink(link);
+		}
+		
+		return isChecked;
 	}
 
 	public synchronized void startPortScanner() {
