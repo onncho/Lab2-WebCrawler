@@ -185,6 +185,12 @@ public class CrawlerControler {
 	public void addPorts(ArrayList<Integer> ports) {
 		m_ReportPerDomain.addPorts(ports);
 	}
+	
+	// Stops and initiate threads for new run
+	public void killThreadPool() {
+		m_DownloaderPool.stopWorker();
+		m_AnalyzerPool.stopWorker();
+	}
 
 public synchronized String[] saveReport(){
 		String fileName = "";

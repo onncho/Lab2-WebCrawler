@@ -32,4 +32,8 @@ public class WorkerT extends Thread {
 	public int getQueueSize() {
 		return m_tasks.getCapacity();
 	}
+	
+	public void clear() {
+		m_tasks.clear();
+	}
 }

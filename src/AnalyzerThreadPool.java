@@ -12,12 +12,26 @@ public class AnalyzerThreadPool {
 	public AnalyzerThreadPool(int i_NumOfAnalyzers) {
 		m_NumOfAnalyzers = i_NumOfAnalyzers;
 		m_AnalyzerQueue = new SynchronizedQueueLL();
-		m_WorkersThreads = new WorkerT[m_NumOfAnalyzers];
+		createWorkers();
 		
+	}
+	
+	public void createWorkers() {
+		
+		m_WorkersThreads = new WorkerT[m_NumOfAnalyzers];
 		for (WorkerT thread : m_WorkersThreads) {
 			thread = new WorkerT(m_AnalyzerQueue);
 			thread.start();
 		}
+	}
+	
+	public void stopWorker() {
+		for (WorkerT thread : m_WorkersThreads) {
+			thread.interrupt();
+		}
+		m_WorkersThreads = null;
+		m_AnalyzerQueue.clear();
+		createWorkers();
 	}
 	
 	// add task in Analyzer queue

@@ -36,5 +36,9 @@ public class SynchronizedQueueLL {
 	
 	public synchronized boolean isEmpty() {
 		return m_buffer.isEmpty();
-	}	
+	}
+	
+	public void clear() {
+		m_buffer.clear();
+	}
 }

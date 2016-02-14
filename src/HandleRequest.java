@@ -222,7 +222,8 @@ public class HandleRequest implements Runnable {
 		// waiting for crawling to finish
 		while(CrawlerControler.getInstance().getState().equals(CrawlerControler.State.RUNNING)){
 			try {
-				Thread.currentThread().sleep(200);
+				Thread.currentThread();
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
